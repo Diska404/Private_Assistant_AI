@@ -1,0 +1,47 @@
+# Secrets and machine data
+.env
+.env.*
+API Key.txt
+*.key
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.sqlite-*
+*.db
+*.log
+*.jsonl
+*.wav
+*.mp3
+*.mp4
+*.webm
+*.lnk
+*.index
+*.bin
+*.exe
+*.dll
+*.spec
+backups/
+runtime/
+local-data/
+.pytest_cache/
+
+# Models, voice data, and archives
+AI Models/
+models/
+*.gguf
+*.safetensors
+*.pth
+*.pt
+*.onnx
+*.zip
+
+# Build products and local runtime data
+build/
+dist/
+program/
+build-tools/
+verification/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
