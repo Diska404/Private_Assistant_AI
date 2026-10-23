@@ -1,0 +1,208 @@
+{
+  "node_count": 2299,
+  "unverified_node_count": 0,
+  "raw_edge_count": 7587,
+  "non_object_edges": 0,
+  "missing_endpoint_edges": 0,
+  "dangling_endpoint_edges": 1056,
+  "external_reference_edges": 0,
+  "self_loop_edges": 13,
+  "valid_candidate_edges": 6531,
+  "exact_duplicate_edges": 0,
+  "directed_unique_endpoint_pairs": 6346,
+  "directed_same_endpoint_collapsed_edges": 185,
+  "undirected_unique_endpoint_pairs": 6342,
+  "undirected_same_endpoint_collapsed_edges": 189,
+  "same_endpoint_group_count": 183,
+  "relation_variant_groups": 181,
+  "source_file_variant_groups": 0,
+  "source_location_variant_groups": 3,
+  "context_variant_groups": 0,
+  "post_build_graph_type": "Graph",
+  "post_build_node_count": 2356,
+  "post_build_edge_count": 7381,
+  "post_build_error": "",
+  "producer_suppression": {
+    "path": "[local-path]",
+    "total_sites": 12,
+    "sites": [
+      {
+        "line": 1813,
+        "name": "seen_ids",
+        "tuple_arity": 0,
+        "sample": "seen_ids = {n[\"id\"] for n in nodes}"
+      },
+      {
+        "line": 2377,
+        "name": "seen_ids",
+        "tuple_arity": 0,
+        "sample": "seen_ids = {n[\"id\"] for n in nodes}"
+      },
+      {
+        "line": 2379,
+        "name": "seen_doc_refs",
+        "tuple_arity": 0,
+        "sample": "seen_doc_refs: set[str] = set()"
+      },
+      {
+        "line": 3046,
+        "name": "seen_ids",
+        "tuple_arity": 0,
+        "sample": "seen_ids: set[str] = {n[\"id\"] for n in nodes}"
+      },
+      {
+        "line": 3193,
+        "name": "seen_ids",
+        "tuple_arity": 0,
+        "sample": "seen_ids = {n.get(\"id\") for n in nodes}"
+      },
+      {
+        "line": 4222,
+        "name": "seen_keys",
+        "tuple_arity": 0,
+        "sample": "seen_keys: set[tuple] = set()"
+      },
+      {
+        "line": 4408,
+        "name": "seen_keys",
+        "tuple_arity": 0,
+        "sample": "seen_keys: set[tuple] = set()"
+      },
+      {
+        "line": 7689,
+        "name": "seen_ids",
+        "tuple_arity": 0,
+        "sample": "seen_ids: set[str] = set()"
+      },
+      {
+        "line": 7797,
+        "name": "seen_ids",
+        "tuple_arity": 0,
+        "sample": "seen_ids: set[str] = set()"
+      },
+      {
+        "line": 7876,
+        "name": "seen_ids",
+        "tuple_arity": 0,
+        "sample": "seen_ids: set[str] = set()"
+      },
+      {
+        "line": 8391,
+        "name": "seen_ids",
+        "tuple_arity": 0,
+        "sample": "seen_ids: set[str] = set()"
+      },
+      {
+        "line": 8392,
+        "name": "seen_edges",
+        "tuple_arity": 4,
+        "sample": "seen_edges: set[tuple[str, str, str, str | None]] = set()"
+      }
+    ],
+    "error": ""
+  },
+  "examples": [
+    {
+      "source": "main_main",
+      "target": "main_main_emit",
+      "edge_count": 4,
+      "relations": [
+        "contains",
+        "indirect_call"
+      ],
+      "source_files": [
+        "main.py"
+      ],
+      "source_locations": [
+        "L30",
+        "L32",
+        "L51",
+        "L68"
+      ],
+      "contexts": [
+        "",
+        "argument"
+      ]
+    },
+    {
+      "source": "advanced_window_advancedwindow_load_audio",
+      "target": "advanced_window_advancedwindow_load_audio_run",
+      "edge_count": 2,
+      "relations": [
+        "contains",
+        "indirect_call"
+      ],
+      "source_files": [
+        "advanced_window.py"
+      ],
+      "source_locations": [
+        "L124",
+        "L125"
+      ],
+      "contexts": [
+        "",
+        "argument"
+      ]
+    },
+    {
+      "source": "agent_contract_development_evidence",
+      "target": "agent_contract_development_evidence_key",
+      "edge_count": 2,
+      "relations": [
+        "calls",
+        "contains"
+      ],
+      "source_files": [
+        "agent_contract.py"
+      ],
+      "source_locations": [
+        "L20",
+        "L26"
+      ],
+      "contexts": [
+        "",
+        "call"
+      ]
+    },
+    {
+      "source": "agent_runtime_run_agent",
+      "target": "agent_runtime_run_agent_ensure_task",
+      "edge_count": 2,
+      "relations": [
+        "calls",
+        "contains"
+      ],
+      "source_files": [
+        "agent_runtime.py"
+      ],
+      "source_locations": [
+        "L69",
+        "L91"
+      ],
+      "contexts": [
+        "",
+        "call"
+      ]
+    },
+    {
+      "source": "agent_runtime_run_agent",
+      "target": "agent_runtime_run_agent_tracked_emit",
+      "edge_count": 2,
+      "relations": [
+        "contains",
+        "indirect_call"
+      ],
+      "source_files": [
+        "agent_runtime.py"
+      ],
+      "source_locations": [
+        "L73",
+        "L89"
+      ],
+      "contexts": [
+        "",
+        "argument"
+      ]
+    }
+  ]
+}

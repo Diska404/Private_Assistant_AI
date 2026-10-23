@@ -2,6 +2,8 @@
 
 Leva Desktop **0.3.0** adalah prototipe asisten Windows berbahasa Indonesia. Repository ini berisi source aplikasi dan eksperimen. Model AI, API key, data pribadi, arsip suara dan executable tidak disertakan.
 
+> **Pembaruan dokumentasi — 23 Oktober 2026:** [peta arsitektur Leva](docs/architecture/README.md) sekarang tersedia, termasuk graf interaktif **2.356 node / 7.381 hubungan / 106 komunitas**, diagram Mermaid, dan penelusuran alur desktop–HP–suara–agent. Graf berasal dari snapshot pengembangan **0.28.0**; source dalam repository ini tetap snapshot historis **0.3.0**. Angka graf adalah hasil analisis statis, bukan klaim seluruh fitur telah lulus uji langsung.
+
 ## Kemampuan saat ini
 
 - Chat teks online-first melalui Google Gemini, dengan fallback kuota/batas laju yang didukung ke model lokal.

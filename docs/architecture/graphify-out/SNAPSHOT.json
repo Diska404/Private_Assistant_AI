@@ -1,0 +1,28 @@
+{
+  "snapshot_date": "2026-10-23",
+  "application_snapshot": "0.28.0",
+  "repository_source_snapshot": "0.3.0",
+  "scope": "app/; static structural extraction and semantic documentation analysis",
+  "files_detected": 167,
+  "nodes": 2356,
+  "edges": 7381,
+  "communities": 106,
+  "directed": false,
+  "limits": [
+    "Not runtime acceptance evidence.",
+    "Repository source remains the historical 0.3.0 import; graph describes the separate 0.28.0 development snapshot.",
+    "voice_packs.json, two CSS files and one web manifest lack graph representation.",
+    "Inferred links and unresolved extraction references require source verification."
+  ],
+  "privacy": "Allowlisted derived artifacts only; machine paths and private network addresses redacted. No databases, API keys, audio, model weights, extraction logs or conversation history exported.",
+  "sha256": {
+    ".graphify_labels.json": "05dae5b12d3c1785e3c5b001e8f146e3d85ec453bf42ea4fc51573e19de5042d",
+    "benchmark.txt": "715f7aa8b3d403bd431ce471536077075f09b089d711f874012ae616181276ab",
+    "cohesion.json": "0532d82856640951ffad9a894ca9f6e0b603dd109e4f2bb08c92d81b379f7f41",
+    "graph-health.json": "7adf78571786bcb1a991c08c0f71216708a0c2173e3c89f1b40cfec473bf01cc",
+    "graph.html": "0c8b4fe627fe378a5094dd235611b27c73cd22e1cbb64d7074a8bd819cd1efdc",
+    "graph.json": "36551a644a94c599d21d8e34fb2125c670f9f8c59e178836c27dad18b92e965c",
+    "GRAPH_REPORT.md": "e22710402ae3f178cf802482c1ba38aa6bd078600a66b14ea60f9b355b8d0c79",
+    "LEVAWINDOW_FLOW.md": "fd6e55b1d3129a62a1469f617bdf0f9b184e4f1468e46cb696238336446df0c0"
+  }
+}
