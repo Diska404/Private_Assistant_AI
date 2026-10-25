@@ -190,7 +190,7 @@ class DesktopWebHost:
             'reply_stream':getattr(m,'_web_stream',{}) if isinstance(getattr(m,'_web_stream',None),dict) else {},
             'companion':{**__import__('presence_companion').settings(m),'last':getattr(m,'companion_last',{}),'max_per_idle':2,'max_per_hour':4},
             'clients':clients,'desktop_mic_suspended':remote,'mobile_mic':'push_to_talk_draft',
-            'error':getattr(m,'_web_last_error',''),'text_ms':getattr(m,'last_text_ms',None),'version':'0.40.0','shared_agent':True})
+            'error':getattr(m,'_web_last_error',''),'text_ms':getattr(m,'last_text_ms',None),'version':'0.41.0','shared_agent':True})
     def stop(self):
         if self.stopped:return
         self.stopped=True

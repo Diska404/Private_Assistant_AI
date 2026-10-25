@@ -1,0 +1,14 @@
+id,requirement,evidence_required,status,evidence_path
+R2-01,Preserve local WIP and verify Ultra 120,"git status+patch, display refresh, p50/p95/p99, frame and solver Hz separately",PARTIAL_MEASURED,PERFORMANCE.md; source checkpoints; GPU preference mismatch
+R2-02,Improve hair and ribbon physics,"collider debug, clips tested in head turn and bend, permission-appropriate",PARTIAL_LICENSED_FIXTURE,PHYSICS.md; collision metrics and corrected-framing video
+R2-03,Improve apparel/accessory dynamics,"movement/clipping close-ups, restore/rollback",PARTIAL_NO_LEVA_MESH_EDITS,PHYSICS.md; clothing and mesh QA pending
+R2-04,Improve skin/eyes/hair materials,identical-angle comparison with same exposure,PARTIAL_SCENE_AND_FIXTURE,GRAPHICS.md; no new source maps
+R2-05,Expand facial animation and reactions,"baseline and enhanced video, supported parameter map, conflict checks",VERIFIED_RUNTIME_REVIEW_PENDING,REACTIONS_AUDIO.md; actual Leva videos
+R2-06,Maintain audio-driven lip sync,"voice sample video, interrupt/no-audio gate, mouth closure",VERIFIED_PLAYBACK_HEURISTIC,"REACTIONS_AUDIO.md; speaking/stop parameter proof, not phoneme recognition"
+R0-01,Inspect AAA reference only,metadata audit complete; confirm NOT Leva or editable source,VERIFIED_REFERENCE_ONLY,AAA_REFERENCE_AUDIT.json; no editable source
+R0-02,Integrate official VTube Studio API optional backend,"user auth, trigger demo, no remote exposure",VERIFIED_EXTERNAL_BRIDGE,"LIVE2D_R0.md; auth, 4800 requests; API off after test"
+R0-03,Design Leva 2D layered production path,"orthographic turnaround, layered PSD plan, Cubism art/rig plan",PARTIAL_CONCEPT_AND_LAYER_PLAN,PRODUCTION_PLAN.md; Leva artwork/rig pending
+R0-04,Run real Live2D renderer with authorized asset,"actual model3+moc3+texture+physics runtime QA, not PNG",VERIFIED_OFFICIAL_SAMPLE_NOT_LEVA,LIVE2D_R0.md; Hiyori native voice video
+R0-05,Unified 3D and 2D avatar state switch,"live demo with shared emotion, blink, playback interruption",PARTIAL_DESKTOP_SWITCHING,shared controller and backend switch; Android pending
+QA-01,Performance and scope safety,gaming concurrent test as allowed; protected assets excluded from GitHub,PARTIAL_LOCAL_QA,PERFORMANCE.md; no gaming/exclusive GPU proof
+QA-02,User visual review,"side-by-side videos, explicit final approval pending",AWAITING_USER_VISUAL_REVIEW,comparison videos; no approval inferred

@@ -39,6 +39,8 @@ class WebBridge:
         from conversation_attachments import ConversationUploads
         self.uploads=ConversationUploads()
         self.presence=WebPresence();self.speech=RemoteSpeech();self.avatar=avatar or ProfileAvatar()
+        from vts_bridge import VTSService
+        self.vts=VTSService()
     def publish_audio(self,path,metadata=None):
         with self.lock:self.audio.publish(path,metadata);self.revision+=1
     def cancel_audio(self):
@@ -130,11 +132,11 @@ class WebBridge:
                     super().setup();self.connection.settimeout(5)
                 def log_message(self,*args):pass
                 def send(self,status,data=None,mime='application/json',cookie=False):
-                    raw=(json.dumps(data,ensure_ascii=False).encode('utf8') if mime=='application/json' else data) if data is not None else b''
+                    raw=data if isinstance(data,bytes) else (json.dumps(data,ensure_ascii=False).encode('utf8') if mime=='application/json' else data) if data is not None else b''
                     self.send_response(status);self.send_header('Content-Type',mime if mime.startswith('audio/') else mime+'; charset=utf-8');self.send_header('Content-Length',str(len(raw)))
                     self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff')
                     self.send_header('Referrer-Policy','no-referrer')
-                    self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' blob:; img-src 'self' data: blob:; frame-ancestors 'none'; base-uri 'none'")
+                    self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self' blob:; img-src 'self' data: blob:; frame-ancestors 'none'; base-uri 'none'")
                     if cookie:self.send_header('Set-Cookie','leva_session='+(bridge.cookie if cookie is True else cookie)+'; HttpOnly; SameSite=Strict; Path=/'+('; Secure; Max-Age=2592000' if self.request_origin()==bridge.remote and bridge.remote else ''))
                     self.end_headers()
                     try:self.wfile.write(raw)
@@ -172,6 +174,9 @@ class WebBridge:
                             if parsed.path in ('/api/avatar-model/leva_original.vrm','/api/avatar-model/pixiv_sample.vrm','/api/avatar-model/pixiv_polished.vrm','/api/avatar-model/custom.vrm'):
                                 from avatar_assets import read
                                 self.send(200,read(parsed.path.rsplit('/',1)[1].split('.')[0]),'model/gltf-binary');return
+                            if parsed.path.startswith('/api/live2d/') and parsed.path!='/api/live2d/status':
+                                from live2d_assets import read
+                                raw,mime=read(parsed.path[len('/api/live2d/'):]);self.send(200,raw,mime);return
                             if parsed.path=='/api/transcribe':
                                 row=bridge.speech.get(parse_qs(parsed.query).get('id',[''])[0],self.session()['id'])
                                 self.send(200,row) if row else self.send(404,{'error':'recording_not_found'});return
@@ -207,6 +212,8 @@ class WebBridge:
                                     else:value={'events':bridge.state.get('trace_events',[]),'runs':store.runs(room) if store else [],'health':store.health() if store else {}}
                                     if room!=bridge.state.get('workspace','assistant'):raise ValueError('workspace_changed_retry')
                                     value['workspace']=room
+                            elif parsed.path=='/api/live2d/status':value=__import__('live2d_assets').status()
+                            elif parsed.path=='/api/vts/status':value=bridge.vts.snapshot()
                             elif parsed.path=='/api/graph':value=bridge.reader.graph()
                             elif parsed.path=='/api/panel':value=bridge.reader.panel(parse_qs(parsed.query).get('name',[''])[0])
                             else:self.send(404,{'error':'not_found'});return
@@ -215,7 +222,7 @@ class WebBridge:
                         except Exception as error:self.send(500,{'error':type(error).__name__})
                         return
                     name={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/graph.js':'graph.js','/physics.js':'physics.js','/camera.js':'camera.js','/engines.js':'engines.js','/rooms.js':'rooms.js','/copy.js':'copy.js','/persona.js':'persona.js','/workspace.js':'workspace.js','/workspace.css':'workspace.css','/style.css':'style.css','/mobile.js':'mobile.js','/audio.js':'audio.js','/mic.js':'mic.js','/mic-worklet.js':'mic-worklet.js','/manifest.webmanifest':'manifest.webmanifest','/icon.svg':'icon.svg'}.get(parsed.path)
-                    if parsed.path in ('/messages.js','/trace.js','/avatar.js','/avatar.css','/avatar-vendor.js','/vrm_avatar.js','/avatar_dynamics.js','/avatar_performance.js','/THIRD_PARTY_NOTICES.txt'):name=parsed.path[1:]
+                    if parsed.path in ('/messages.js','/trace.js','/avatar.js','/avatar.css','/avatar-vendor.js','/vrm_avatar.js','/avatar_dynamics.js','/avatar_performance.js','/avatar_reactions.js','/avatar_secondary.js','/avatar_timing.js','/vts_avatar.js','/live2d_avatar.js','/THIRD_PARTY_NOTICES.txt'):name=parsed.path[1:]
                     if not name:self.send(404,b'Not found','text/plain');return
                     mime='text/plain' if name.endswith('.txt') else 'image/svg+xml' if name.endswith('.svg') else 'application/manifest+json' if name.endswith('.webmanifest') else 'text/html' if name.endswith('.html') else 'text/css' if name.endswith('.css') else 'text/javascript'
                     self.send(200,(bridge.assets/name).read_bytes(),mime)
@@ -237,6 +244,21 @@ class WebBridge:
                         except (ValueError,TypeError):self.send(400,{'error':'invalid_pairing'})
                         return
                     if not self.authenticated():self.send(401,{'error':'open_from_desktop'});return
+                    if self.path in ('/api/vts/connect','/api/vts/frame','/api/vts/disconnect'):
+                        try:
+                            length=int(self.headers.get('Content-Length','0'))
+                            if not 0<length<=2000:raise ValueError('invalid_vts_body')
+                            value=json.loads(self.rfile.read(length));owner=self.session()['id']
+                            if bridge.state.get('workspace')!='companion_avatar':raise ValueError('companion_not_active')
+                            if self.path=='/api/vts/connect':
+                                if not isinstance(value,dict) or set(value)-{'authorize','port'} or type(value.get('authorize',False)) is not bool:raise ValueError('invalid_vts_connect')
+                                if value.get('authorize') and self.request_origin()!=bridge.origin:raise ValueError('vts_authorize_from_laptop_only')
+                                result=bridge.vts.start(owner,authorize=value.get('authorize',False),port=value.get('port',8001))
+                            elif self.path=='/api/vts/frame':result={'accepted':bridge.vts.feed(owner,value)}
+                            else:bridge.vts.close(owner);result=bridge.vts.snapshot()
+                            self.send(200,result)
+                        except (ValueError,TypeError):self.send(400,{'error':'vts_invalid_request_or_owner'})
+                        return
                     if self.path=='/api/avatar-model':
                         try:
                             from avatar_assets import upload,MAX_MODEL
@@ -318,6 +340,7 @@ class WebBridge:
             self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start()
             return self.url
     def stop(self):
+        self.vts.close()
         self.speech.stop()
         self.cancel_audio()
         with self.lock:server=self.server;self.server=None;self.stopped=True

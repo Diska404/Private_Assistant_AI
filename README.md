@@ -1,98 +1,91 @@
-<p align="center"><img src="docs/assets/leva-banner.svg" alt="LEVA — local AI assistant, 0.40.0 R1 development snapshot" width="1200" /></p>
+<p align="center"><img src="docs/assets/leva-banner.svg" alt="LEVA — personal AI assistant, 0.41.0 R2 + Live2D R0 candidate" width="1200" /></p>
 
-<p align="center"><a href="#tentang-leva"><b>Tentang</b></a> · <a href="#ruang-kerja"><b>Ruang kerja</b></a> · <a href="#avatar-3d--r1"><b>Avatar 3D</b></a> · <a href="#alur-modul-avatar"><b>Arsitektur</b></a> · <a href="#menjalankan-source"><b>Source & validasi</b></a></p>
+<p align="center"><b>Desktop · Web · Android interface · Modular voice · Agent tools · Avatar laboratory</b></p>
 
 # Leva — Personal AI Assistant
 
-Asisten AI pribadi untuk Windows yang menghubungkan percakapan, suara modular, konteks, dan alat pekerjaan pada laptop. Desktop dan web memakai layanan pelaksana yang sama; HP menjadi antarmuka bagi laptop.
+Asisten AI pribadi untuk Windows yang menghubungkan percakapan, suara, pengetahuan dan alat pekerjaan pada laptop. Desktop dan web memakai layanan pelaksana yang sama; HP menjadi antarmuka pribadi bagi laptop.
 
-> **Snapshot source: 0.40.0, 25 Oktober 2026.** Repository kini berisi source runtime pengembangan yang diperbarui dari import historis 0.3.0. R1 adalah kandidat peningkatan animasi/ekspresi avatar 3D, belum avatar premium final. Model AI, model karakter, voice pack, API key dan data pengguna tidak disertakan.
+> **Source snapshot 0.41.0 · 25 Oktober 2026.** Kandidat pengembangan R2 dan Live2D R0. Model AI, aset karakter, SDK Live2D, voice pack, credential dan data pengguna tidak disertakan. Avatar premium final dan kendali universal seluruh aplikasi belum diklaim selesai.
 
-## Tentang Leva
+<table><tr><td width="33%" valign="top"><h3>Percakapan</h3><p>Ruang Asisten, Chat, Secret ♡ dan Leva ♡ dengan konteks serta model sesuai tujuan. ASR, LLM dan TTS merupakan tahap terpisah.</p></td><td width="33%" valign="top"><h3>Pekerjaan</h3><p>Alat aplikasi/browser, terminal, patch, pencarian berkas, progres dan jurnal tugas. Hasil alat perlu diverifikasi; cakupannya tidak menjamin semua canvas atau game.</p></td><td width="33%" valign="top"><h3>Karakter</h3><p>Renderer VRM, controller reaksi/ekspresi, serta backend Live2D native dan VTube Studio opsional. Pemisahan renderer, state dan suara menjaga fleksibilitas.</p></td></tr></table>
 
-<table><tr><td width="33%" valign="top"><h3>Percakapan</h3><p>Ruang dengan tujuan berbeda, konteks per ruang, dan pemilihan model sesuai kebutuhan. ASR, LLM dan TTS merupakan tahap terpisah.</p></td><td width="33%" valign="top"><h3>Pekerjaan</h3><p>Alat laptop, terminal, berkas, progres dan jurnal tugas. Keberhasilan perlu diperiksa dari hasil alat; kendali universal semua aplikasi belum dijamin.</p></td><td width="33%" valign="top"><h3>Karakter</h3><p>Avatar Leva 3D dengan controller ekspresi dan gerak, suara modular, serta UI web yang dapat dipakai dari perangkat pribadi.</p></td></tr></table>
+## Perkembangan terbaru — R2 dan Live2D R0
 
-## Ruang kerja
+- **120 FPS target** dengan frekuensi solver terpisah; Ultra memakai 60 Hz physics secara default. Fallback adaptif 120→60 tersedia, dengan uji overload sintetis.
+- **24 profil ekspresi, sembilan reaksi** dan blending kanal yang tersedia. Angka itu bukan jumlah morph baru yang dibuat.
+- **Fisika reversibel** pada aset yang boleh dimodifikasi: kategori rambut/pita/pakaian, collider mengikuti tulang, reset saat stall dan pose berubah besar.
+- **Audio aktual menggerakkan mulut**, dengan silence/interrupt gate dan variasi berbasis fitur audio; belum phoneme alignment.
+- **Live2D native nyata** memakai SDK lokal pengguna: model3, moc3, texture, physics dan pose. Bukti saat ini menggunakan Hiyori resmi, bukan karakter Leva.
+- **Bridge VTube Studio** sudah diuji autentikasi dan streaming lokal. Backend eksternal menampilkan model di jendela VTS; tidak menyajikan video avatar ke HP. API dimatikan kembali setelah uji.
 
-| Ruang | Arah penggunaan | Batas |
-|---|---|---|
-| Asisten | Tugas dengan alat yang tersedia | Bukan jaminan dapat mengontrol setiap aplikasi/canvas/game |
-| Chat | Percakapan dan analisis kiriman | Jalur percakapan dibedakan dari eksekusi alat |
-| Secret ♡ | Percakapan personal | Nama ruang bukan enkripsi; akses perangkat mengikuti konfigurasi pengguna |
-| Leva ♡ 3D | Preview companion dan animasi avatar | Masih pengembangan; membutuhkan aset pribadi yang penggunaannya sesuai |
+3D tetap jalur utama, sementara 2D R0 kini aktif. Ilustrasi konsep Leva belum menjadi artwork berlapis atau rig Cubism. AAA dan model contoh tidak diganti namanya menjadi Leva.
 
-## Avatar 3D — R1
-
-**3D dikerjakan lebih dahulu. Versi 2D ditunda sampai kualitas 3D dinilai cukup oleh pemilik proyek.** Placeholder lama tidak dipresentasikan sebagai versi 2D final.
-
-![Ekspresi dari rekaman renderer](docs/avatar/r1/media/smile-frame.png)
-
-[Lihat rekaman transisi wajah tanpa audio](docs/avatar/r1/media/r1-facial-transitions.mp4) · [Laporan visual](docs/avatar/r1/LEVA_PREMIUM_VISUAL_COMPARISON.md) · [Hasil QA](docs/avatar/r1/LEVA_AVATAR_PERFORMANCE_QA.md)
-
-Yang sudah dikerjakan pada R1:
-
-- Gerak kepala, napas, torso dan gaze yang kecil serta mengikuti state.
-- Blending ekspresi, cooldown, interval blink bervariasi dan penanganan morph yang tidak tersedia.
-- Mulut berdasarkan audio yang benar-benar diputar, dengan noise gate dan attack/release smoothing. Ini belum lip-sync phoneme yang akurat.
-- Tag ekspresi konservatif dari balasan; kalibrasi prosedural, bukan neural-network training.
-- Scene lights Premium Studio, Soft Anime, Night dan Dark Environment. Material model sumber tetap dipertahankan.
-- Inspector developer: baseline/R1, physics on/off/reset, pose freeze, slow motion, bobot ekspresi dan telemetri renderer.
-- Buffer timing terbatas dan empat profil render/fisika yang mengubah runtime.
-
-**Belum selesai:** shader/tekstur/mesh baru pada sumber, collider rambut/pita/pakaian tambahan, sertifikasi bebas clipping, articulation phoneme, binding renderer ke RTX4050, pengujian jangka panjang dan penerimaan visual pengguna. Snapshot ini tidak menyamakan kontrol scene dengan modifikasi aset premium.
-
-| Bukti pengembangan di Windows | Hasil |
+| Validasi kandidat lokal | Hasil |
 |---|---|
-| Regresi aplikasi | 610 tes dijalankan; satu skip khusus engine gambar |
-| Skrip JavaScript | 12 skrip lulus; termasuk 15 behavior checks controller baru |
-| Pemeriksaan paket kandidat lokal | 102 lulus |
-| Renderer yang teramati | RTX5070; request RTX4050 belum cocok |
-| Sampel frame p95 | Premium 16,8 ms; Balanced 33,4 ms; Gaming 33,5 ms; Eco 66,8 ms |
+| Regresi pada source yang disanitasi | **620 tes**, 0 kegagalan, 1 skip engine gambar |
+| Skrip JavaScript | **16 lulus** |
+| Pemeriksaan frozen package lokal | **104 lulus** |
+| Leva VRM Ultra | Sekitar 120 FPS rata-rata window pendek; p95 sekitar 11,2 ms |
+| Native Live2D Ultra | 118,35 FPS rata-rata; p95 11,4 ms; solver 60 Hz |
+| Native lip-sync | Bukaan mulut 0,585 ketika bicara dan 0 setelah dihentikan |
+| GPU renderer yang terbukti | RTX 5070; permintaan RTX 4050 belum cocok |
 
-Angka frame berasal dari window pendek tanpa LLM, dengan profil UV pengguna dipertahankan. Bukan sertifikasi performa normal, stress test atau bukti Android fisik. [Ringkasan terstruktur](docs/avatar/r1/verification-summary.json).
+120 FPS belum terkunci: p95 tersebut melebihi interval 8,33 ms. Window pendek, profil UV dan aplikasi latar pengguna dipertahankan; hasil ini bukan benchmark terkontrol lintas perangkat. Uji Android fisik dan gaming serentak belum selesai. [Ringkasan terstruktur](docs/avatar/r2/verification-summary.json) · [Performa dan batas](docs/avatar/r2/PERFORMANCE.md).
 
-## Alur modul avatar
+## Arsitektur avatar
 
 ```mermaid
 flowchart LR
-  Reply[Balasan pada ruang VTuber] --> Tags[avatar_emotion: tag pola sederhana]
-  Tags --> Director[AvatarDirector / state host]
-  Director --> Bridge[WebBridge terautentikasi]
+  Reply[Balasan companion] --> Tags[Tag ekspresi / reaksi]
+  Tags --> State[AvatarDirector + generation ID]
+  State --> Bridge[WebBridge terautentikasi]
   Bridge --> Stage[CompanionStage]
-  Audio[Audio Higgs / voice pack lokal] --> Playback[RemoteVoice: buffer yang diputar]
-  Playback --> Controller[NaturalPerformance]
-  Stage --> Controller
-  Asset[VRM pribadi + hash manifest] --> Loader[Loader aset lokal]
-  Loader --> VRM[three-vrm]
-  Controller --> VRM
-  Physics[Fixed timestep / fisika sumber] --> VRM
-  Scene[Kamera dan pencahayaan scene] --> Render[WebGL renderer]
-  VRM --> Render
+  Audio[Voice pack lokal] --> Playback[Audio yang benar-benar diputar]
+  Playback --> Performance[Controller R2]
+  Stage --> Performance
+  Performance --> VRM[VRM / three-vrm]
+  Performance --> Native[Cubism native / SDK pribadi]
+  Performance --> VTS[VTS bridge loopback opsional]
+  Asset[Manifest aset + hash + izin] --> VRM
+  LocalSDK[Core dan sampel lokal / tidak ada di repo] --> Native
+  VRM --> Render[Browser WebGL]
+  Native --> Render
+  VTS --> External[Jendela VTube Studio]
 ```
 
-Diagram ini memetakan komponen R1 pada snapshot sekarang. Peta Graphify seluruh proyek di [docs/architecture](docs/architecture) tetap merupakan arsip arsitektur 0.28.0 dan belum dihitung sebagai graph penuh 0.40.0.
+State dan audio dibagi; renderer serta asetnya tetap terpisah. Preferensi GPU adalah permintaan yang diverifikasi lewat renderer aktual. Peta Graphify seluruh proyek di [docs/architecture](docs/architecture) masih arsip 0.28.0; diagram di atas adalah peta modul avatar snapshot 0.41.0.
+
+## Bukti visual historis
+
+![Ekspresi Leva pada renderer R1](docs/avatar/r1/media/smile-frame.png)
+
+[Rekaman transisi R1 tanpa audio](docs/avatar/r1/media/r1-facial-transitions.mp4). Media ini berlabel historis 0.40.0; rekaman R2, sampel SDK, suara dan screenshot pribadi disimpan lokal.
 
 ## Menjalankan source
 
-Source menargetkan Windows dan menggunakan runtime/model yang dikonfigurasi terpisah. Sesuaikan `app/paths.py` (DATA), registry model dan adapter lokal sebelum menjalankan aplikasi normal. Folder data, credential, VRM dan model tidak dibuat ulang dari repository ini.
+Source menargetkan Windows. Sesuaikan lokasi DATA, registry model dan adapter yang dipakai. Repository tidak menyediakan model, folder percakapan, token, SDK Core atau karakter.
 
 ```powershell
 python -m pip install -r requirements-preview.txt
 python experiments/run_isolated_regressions.py ./local-data/verification
-node experiments/test_avatar_performance.mjs
+node experiments/test_avatar_reactions.mjs
+node experiments/test_avatar_timing.mjs
+node experiments/test_live2d_native.mjs
 ```
 
-Salinan source yang diekspor ini juga telah diuji: 610 tes aplikasi (satu skip engine gambar) dan 12 skrip JavaScript berhasil pada 25 Oktober 2026. Regresi mengalihkan DATA ke folder sementara sebelum import aplikasi. Model STT/TTS/LLM dan engine gambar mempunyai environment/dependensi tambahan; file requirements dasar tidak memasang seluruh engine tersebut. Untuk aplikasi yang telah dikonfigurasi lokal, entrypoint adalah `python app/main.py`. Tinjau pengaturan audio/startup yang sesuai untuk perangkat Anda.
+Pengujian mengalihkan DATA sebelum import aplikasi. STT/TTS/LLM mempunyai environment tambahan. Untuk konfigurasi lokal yang lengkap, entrypoint `python app/main.py`; tinjau pilihan audio/startup terlebih dahulu. Cubism diunduh pengguna secara terpisah dari [Live2D](https://www.live2d.com/en/sdk/download/web/). Script persiapan lokal tidak membundel vendor Core ke GitHub.
 
-`SOURCE_SNAPSHOT.json` mencatat file source yang diekspor dan batasnya. Endpoint tailnet pribadi diganti contoh pada ekspor; tidak menyertakan history, key, database, voice pack, rekaman suara atau arsip mod.
+## Dokumentasi
 
-## Dokumentasi pengembangan
+- [Laporan kandidat R2 + Live2D R0](docs/avatar/r2/LEVA_PREMIUM_AVATAR_R2_REPORT.md)
+- [Fisika dan batas aset](docs/avatar/r2/PHYSICS.md)
+- [Reaksi, ekspresi dan audio](docs/avatar/r2/REACTIONS_AUDIO.md)
+- [Grafik, supersampling dan status ray tracing](docs/avatar/r2/GRAPHICS.md)
+- [Native Live2D dan bridge VTS](docs/avatar/r2/LIVE2D_R0.md)
+- [Matriks penerimaan](docs/avatar/r2/ACCEPTANCE.csv)
+- [Source snapshot dan pengecualian](SOURCE_SNAPSHOT.json)
 
-- [Struktur model](docs/avatar/r1/LEVA_MODEL_STRUCTURE_AUDIT.md)
-- [Scene lights dan batas material](docs/avatar/r1/LEVA_PREMIUM_SHADER_MATERIAL_REPORT.md)
-- [Kalibrasi ekspresi](docs/avatar/r1/LEVA_FACIAL_EXPRESSION_CALIBRATION.md)
-- [Suara dan animasi](docs/avatar/r1/LEVA_LIPSYNC_ANIMATION_REPORT.md)
-- [Rambut/pita/collision yang masih terbuka](docs/avatar/r1/LEVA_HAIR_RIBBON_PHYSICS_REPORT.md)
-- [Penilaian pengguna dan rencana versi](docs/avatar/r1/LEVA_PREMIUM_AVATAR_USER_REVIEW.md)
+**Masih terbuka:** Leva 2D dengan layered art/cmo3/moc3, modifikasi rig/material/tekstur Leva yang diperbolehkan, penilaian clipping menyeluruh, ray tracing, phoneme alignment, pembagian GPU yang terbukti, Android fisik, stress test dan persetujuan visual pemilik proyek. Source VRM Leva yang membatasi modifikasi tetap dipertahankan; keberhasilan pada sampel berizin tidak menggantikan hasil karakter final.
 
-Leva adalah karakter dari Girls' Frontline 2; hak karakter/model milik pencipta dan pemegang hak terkait, termasuk MICA Team. Ini proyek asisten pribadi independen. Model karakter tidak didistribusikan di repo, dan script/renderer tidak memindahkan kepemilikan aset. Lisensi third-party renderer tercatat pada `app/leva_web/THIRD_PARTY_NOTICES.txt`.
+Leva merupakan karakter Girls' Frontline 2; hak karakter dan aset tetap pada pencipta/pemegang hak terkait. Ini proyek asisten pribadi independen. Model asli dan kontribusi script/renderer adalah hal berbeda. Lisensi renderer yang dibundel ada di `app/leva_web/THIRD_PARTY_NOTICES.txt`; SDK dan sampel terpisah mengikuti lisensinya masing-masing.

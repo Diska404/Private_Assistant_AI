@@ -1,5 +1,6 @@
 .companion-stage{min-height:490px;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#242239,#0b1622 72%)}
 .companion-stage .panel-header{padding:20px 24px}.avatar-frame{position:relative;height:420px}.avatar-frame canvas{display:block;width:100%;height:100%}
+.avatar-frame canvas[hidden]{display:none}.vts-backend-card{height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:32px;box-sizing:border-box;color:#c3d8e1;background:radial-gradient(ellipse at center,#2a2540,#0c1723)}.vts-backend-card h3{font-size:26px}.vts-backend-card p{max-width:720px;line-height:1.8;margin:0}.avatar-controls[data-backend=vts] #avatar-record{display:none}
 .avatar-caption{position:absolute;left:16px;right:16px;bottom:12px;text-align:center;color:#9cc1cc;font-size:11px;pointer-events:none}
 .avatar-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:16px 22px;border-top:1px solid #31414b}
 .avatar-controls small{flex-basis:100%;color:#91aab7;line-height:1.6}.avatar-controls button{border-radius:12px}

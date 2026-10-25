@@ -28,6 +28,13 @@ export class RemoteVoice {
   let power=0,count=0;for(let i=start;i<Math.min(samples.length,start+480);i+=4){power+=samples[i]*samples[i];count++}
   return count?Math.min(1,Math.sqrt(power/count)*4):0;
  }
+ get outputFeatures(){
+  if(!this.enabled||!this.source||this.context?.state!=='running'||!this.playbackBuffer?.getChannelData)return {zeroCrossingRate:0,available:false};
+  const now=this.context.currentTime;if(this.featureSource===this.source&&now-this.featureTime<.008)return this.features;
+  const samples=this.playbackBuffer.getChannelData(0),start=Math.max(0,Math.floor((now-this.playbackStarted)*this.playbackBuffer.sampleRate));let crossings=0,count=0;
+  for(let i=start+1;i<Math.min(samples.length,start+512);i++){if((samples[i]>=0)!==(samples[i-1]>=0))crossings++;count++}
+  this.featureSource=this.source;this.featureTime=now;this.features={zeroCrossingRate:count?crossings/count:0,available:count>0};return this.features;
+ }
  disconnected(){this.stop('Koneksi laptop terputus · audio dijeda.');this.fresh=true}
  recordingTap(){
   if(!this.enabled||this.context?.state!=='running'||!this.context.createMediaStreamDestination)return null;

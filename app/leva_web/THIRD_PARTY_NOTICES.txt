@@ -78,3 +78,10 @@ VRM sample: pixiv Inc., VRM1_Constraint_Twist_Sample v1.0.1. VRM Public License 
 https://vrm.dev/licenses/1.0/
 https://github.com/pixiv/three-vrm/tree/3caf7a21ee68f0d5dfa363ab3d577450bbf60136
 Sample metadata/permissions stored separately in avatar-assets/sample-manifest.json. Sample is not the final Leva character.
+
+Optional Live2D runtime (not included in this source bundle): the user separately
+obtains Cubism SDK for Web from https://www.live2d.com/en/sdk/download/web/.
+Cubism Core uses the Live2D Proprietary Software License; Framework uses the
+Live2D Open Software License. Official sample models have their own Free
+Material/sample terms. Consult the LICENSE/NOTICE files in the local SDK.
+The native test identifies Hiyori as an official sample, not the Leva character.

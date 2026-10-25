@@ -6,24 +6,29 @@ import time
 ROOM='companion_avatar'
 STATES={'idle','listening','thinking','speaking','interrupted','sleeping','error'}
 EXPRESSIONS={'neutral','happy','curious','thinking','shy','surprised','sad','soft_smile','laugh','confused','embarrassed','playful','angry','sleepy','attentive','excited'}
+EXPRESSIONS.update({'gentle','concerned','relieved','proud','apologetic','teasing','disappointed','grateful'})
+REACTIONS={'none','greeting','nod','ponder','comfort','celebrate','playful','apology','surprise','interrupted'}
 
 class AvatarDirector:
     def __init__(self,clock=time.monotonic):
         self.clock=clock;self.session=secrets.token_hex(8);self.generation=0;self.seq=0
         self.state='idle';self.expression='neutral';self.mouth=0.;self.until=0.;self.last_expression=-10.
+        self.reaction='none';self.reaction_id=0;self.reaction_at=self.clock()
     def cancel(self):
-        self.generation+=1;self.state='interrupted';self.expression='neutral';self.mouth=0.;self.until=0.;self.seq+=1
+        self.generation+=1;self.state='interrupted';self.expression='neutral';self.mouth=0.;self.until=0.;self.seq+=1;self.reaction='none';self.reaction_id+=1
         return self.snapshot()
     def apply(self,event):
-        if not isinstance(event,dict) or set(event)-{'generation','state','expression','intensity','duration_ms','mouth'}:raise ValueError('invalid_avatar_event')
+        if not isinstance(event,dict) or set(event)-{'generation','state','expression','reaction','intensity','duration_ms','mouth'}:raise ValueError('invalid_avatar_event')
         if event.get('generation',self.generation)!=self.generation:return False
         if 'state' in event and event['state'] not in STATES:raise ValueError('invalid_avatar_state')
         if 'expression' in event and event['expression'] not in EXPRESSIONS:raise ValueError('invalid_avatar_expression')
+        if 'reaction' in event and event['reaction'] not in REACTIONS:raise ValueError('invalid_avatar_reaction')
         for key in ('mouth','intensity'):
             if key in event and (type(event[key]) not in (int,float) or not math.isfinite(event[key]) or not 0<=event[key]<=1):raise ValueError('invalid_avatar_level')
         duration=event.get('duration_ms',1200)
         if type(duration) is not int or not 100<=duration<=5000:raise ValueError('invalid_avatar_duration')
         if 'state' in event:self.state=event['state']
+        if 'reaction' in event:self.reaction=event['reaction'];self.reaction_id+=1;self.reaction_at=self.clock()
         if 'expression' in event and self.clock()-self.last_expression>=.2:
             self.expression=event['expression'];self.last_expression=self.clock();self.until=self.clock()+duration/1000
         self.mouth=event.get('mouth',self.mouth) if self.state=='speaking' else 0.
@@ -32,14 +37,15 @@ class AvatarDirector:
         if self.until and self.clock()>=self.until:self.expression='neutral';self.until=0
         return {'schema_version':1,'session_id':self.session,'generation_id':self.generation,'seq':self.seq,
             'state':self.state,'expression':self.expression,'mouth':self.mouth if self.state=='speaking' else 0.,
+            'reaction':self.reaction,'reaction_id':self.reaction_id,'reaction_age_ms':max(0,int((self.clock()-self.reaction_at)*1000)),
             'provider':'placeholder','asset_id':'leva_procedural_placeholder_v1','avatar_final':False}
 
 def enabled(preferences):return preferences.get('companion_enabled') is True
 
 def validate_settings(value):
-    if not isinstance(value,dict) or not value or set(value)-{'enabled','label','experimental_models','asset','renderer_gpu','realtime_speech','native_stream'}:raise ValueError('invalid_companion_settings')
+    if not isinstance(value,dict) or not value or set(value)-{'enabled','label','experimental_models','asset','renderer_gpu','renderer_backend','realtime_speech','native_stream'}:raise ValueError('invalid_companion_settings')
     from preferences import validate_setting
-    keys={'enabled':'companion_enabled','label':'companion_label','experimental_models':'experimental_models_enabled','asset':'companion_avatar_asset','renderer_gpu':'companion_renderer_gpu','realtime_speech':'realtime_speech','native_stream':'native_voice_stream'}
+    keys={'enabled':'companion_enabled','label':'companion_label','experimental_models':'experimental_models_enabled','asset':'companion_avatar_asset','renderer_gpu':'companion_renderer_gpu','renderer_backend':'companion_renderer_backend','realtime_speech':'realtime_speech','native_stream':'native_voice_stream'}
     for key,val in value.items():validate_setting(keys[key],val)
     if value.get('asset') not in (None,'placeholder'):__import__('avatar_assets').manifest(value['asset'])
     return dict(value)
@@ -49,7 +55,7 @@ def configure(main,value):
     if main.busy or getattr(main,'_translation_pending',False):raise ValueError('Tunggu jawaban selesai atau hentikan percakapan terlebih dahulu.')
     if any(k in value for k in ('realtime_speech','native_stream')):
         main.stop_reply_voice();main.cancel_inference()
-    keys={'enabled':'companion_enabled','label':'companion_label','experimental_models':'experimental_models_enabled','asset':'companion_avatar_asset','renderer_gpu':'companion_renderer_gpu','realtime_speech':'realtime_speech','native_stream':'native_voice_stream'}
+    keys={'enabled':'companion_enabled','label':'companion_label','experimental_models':'experimental_models_enabled','asset':'companion_avatar_asset','renderer_gpu':'companion_renderer_gpu','renderer_backend':'companion_renderer_backend','realtime_speech':'realtime_speech','native_stream':'native_voice_stream'}
     main.preferences.set_many({keys[k]:v for k,v in value.items()})
     frame=getattr(main,'room_frames',{}).get(ROOM)
     if frame:
@@ -88,7 +94,7 @@ def presentation(main,phase,output_level):
     if not isinstance(director,AvatarDirector):director=main.avatar_director=AvatarDirector()
     generation=getattr(main,'generation',0)
     if isinstance(generation,int) and generation!=director.generation:
-        director.generation=generation;director.mouth=0.;director.expression='neutral'
+        director.generation=generation;director.mouth=0.;director.expression='neutral';director.reaction='none';director.reaction_id+=1
     state={'paused':'sleeping','tool':'thinking','memory':'thinking'}.get(phase,phase)
     if state not in STATES:state='idle'
     until=getattr(main,'_companion_interrupted_until',0)
@@ -97,10 +103,11 @@ def presentation(main,phase,output_level):
     hint=getattr(main,'_avatar_reply_emotion',None)
     if getattr(main,'workspace',None)==ROOM and isinstance(hint,dict) and hint.get('generation')==generation:
         if getattr(main,'_avatar_emotion_seen',None) is not hint:
-            director.apply({'expression':hint['expression'],'duration_ms':3500});main._avatar_emotion_seen=hint
+            director.apply({'expression':hint['expression'],'reaction':hint.get('reaction','none'),'duration_ms':3500});main._avatar_emotion_seen=hint
     return {**director.snapshot(),'enabled':enabled(main.preferences),'display_name':main.preferences.get('companion_label'),
         'mic_authorized':getattr(main,'companion_mic_consent',False) is True,'tools':'none',
         'history':'session_only','cloud':'disabled','asset':main.preferences.get('companion_avatar_asset'),
         'asset_choices':__import__('avatar_assets').choices(),'renderer_gpu':main.preferences.get('companion_renderer_gpu'),
+        'renderer_backend':main.preferences.get('companion_renderer_backend') or 'vrm',
         'realtime_speech':main.preferences.get('realtime_speech'),'native_stream':main.preferences.get('native_voice_stream'),
-        'providers':{'placeholder':'available','vrm':'available','live2d':'not_configured'}}
+        'providers':{'placeholder':'available','vrm':'available','vts':'optional_external_requires_auth','live2d_native':'core_and_model_not_configured'}}

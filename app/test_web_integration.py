@@ -61,9 +61,26 @@ class BridgeTests(unittest.TestCase):
             with self.request('/api/commands','POST',payload) as response:self.assertEqual(response.status,202)
         self.assertEqual(self.bridge.commands.qsize(),1);self.bridge.reader.assert_not_called()
     def test_avatar_modules_are_served_by_actual_bridge(self):
-        for name in ('messages.js','trace.js','avatar.js','avatar.css','vrm_avatar.js','avatar_dynamics.js','avatar_performance.js','avatar-vendor.js','THIRD_PARTY_NOTICES.txt'):
+        for name in ('messages.js','trace.js','avatar.js','avatar.css','vrm_avatar.js','avatar_dynamics.js','avatar_performance.js','avatar_reactions.js','avatar_secondary.js','avatar_timing.js','vts_avatar.js','live2d_avatar.js','avatar-vendor.js','THIRD_PARTY_NOTICES.txt'):
             with self.request('/'+name) as response:
                 self.assertEqual(response.status,200);self.assertGreater(len(response.read()),100)
+    def test_live2d_private_raw_json_and_no_arbitrary_files(self):
+        from unittest.mock import patch
+        with patch('live2d_assets.read',return_value=(b'{"Version":3}','application/json')):
+            with self.request('/api/live2d/model/sample.model3.json') as response:
+                self.assertEqual(response.read(),b'{"Version":3}')
+                self.assertIn("'wasm-unsafe-eval'",response.headers['Content-Security-Policy'])
+                self.assertNotIn("'unsafe-eval'",response.headers['Content-Security-Policy'])
+            with self.assertRaises(urllib.error.HTTPError) as caught:self.request('/api/live2d/runtime/core.js',authenticated=False)
+            self.assertEqual(caught.exception.code,401)
+        with self.assertRaises(urllib.error.HTTPError):self.request('/api/live2d/model/../credentials.json')
+    def test_vts_is_authenticated_and_wrong_room_cannot_control_it(self):
+        with self.assertRaises(urllib.error.HTTPError) as caught:self.request('/api/vts/status',authenticated=False)
+        self.assertEqual(caught.exception.code,401)
+        with self.request('/api/vts/status') as response:self.assertEqual(json.load(response)['state'],'off')
+        with self.assertRaises(urllib.error.HTTPError) as caught:self.request('/api/vts/connect','POST',{'authorize':False})
+        self.assertEqual(caught.exception.code,400)
+        self.assertIsNone(self.bridge.vts.thread)
     def test_avatar_upload_requires_auth_and_origin(self):
         for authenticated,origin in ((False,None),(True,'https://example.com')):
             with self.assertRaises(urllib.error.HTTPError) as caught:self.request('/api/avatar-model','POST',{},authenticated,origin)

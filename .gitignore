@@ -56,3 +56,10 @@ venv/
 *.gltf
 **/graphify-out/cache/
 !docs/avatar/r1/media/r1-facial-transitions.mp4
+
+# Private Live2D runtime, art and credentials
+**/Live2D-SDK/
+*.moc3
+*.cmo3
+*.psd
+*.dpapi

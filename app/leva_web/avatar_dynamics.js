@@ -1,5 +1,6 @@
 // Reversible runtime controls, independent of persona text and host permissions.
 export const QUALITY=Object.freeze({
+ ultra:{fps:120,dpr:1.75,physicsHz:60,motion:1},
  premium:{fps:60,dpr:2,physicsHz:60,motion:1},
  balanced:{fps:30,dpr:1.5,physicsHz:30,motion:.7},
  gaming:{fps:30,dpr:1,physicsHz:15,motion:.35},
@@ -22,20 +23,22 @@ export function expressionTargets(state,expression){
  return Object.fromEntries(['happy','sad','angry','relaxed','surprised'].map(k=>[k,k===selected?weight:state==='listening'&&k==='relaxed'?.12:0]));
 }
 export class FixedPhysics{
- constructor(){this.accumulator=0;this.steps=0;this.discardedSeconds=0}
+ constructor(){this.accumulator=0;this.steps=0;this.discardedSeconds=0;this.cappedFrames=0}
  update(delta,hz,callback){
-  this.accumulator+=Math.max(0,Math.min(delta,.1));const step=1/hz;let count=0;
-  while(this.accumulator>=step&&count<4){callback(step);this.accumulator-=step;count++;this.steps++}
-  if(this.accumulator>step*4){this.discardedSeconds+=this.accumulator;this.accumulator=0}
+  if(!Number.isFinite(delta)||!Number.isFinite(hz)||hz<=0)return 0;
+  this.discardedSeconds+=Math.max(0,delta-.1);this.accumulator+=Math.max(0,Math.min(delta,.1));const step=1/hz;let count=0;
+  while(this.accumulator+1e-9>=step&&count<4){callback(step);this.accumulator=Math.max(0,this.accumulator-step);count++;this.steps++}
+  if(this.accumulator+1e-9>=step){const dropped=Math.floor((this.accumulator+1e-9)/step)*step;this.discardedSeconds+=dropped;this.accumulator=Math.max(0,this.accumulator-dropped);this.cappedFrames++}
   return count;
  }
  reset(){this.accumulator=0}
 }
 export class MaterialLayer{
- constructor(materials=[]){this.items=materials.filter(m=>m.isMToonMaterial).map(m=>({m,original:{shadingToonyFactor:m.shadingToonyFactor,shadingShiftFactor:m.shadingShiftFactor,giEqualizationFactor:m.giEqualizationFactor}}))}
+ constructor(materials=[],{maxAnisotropy=4}={}){this.maxAnisotropy=maxAnisotropy;this.textures=new Map();this.items=materials.filter(m=>m.isMToonMaterial).map(m=>{for(const value of Object.values(m))if(value?.isTexture&&!this.textures.has(value))this.textures.set(value,{anisotropy:value.anisotropy});return {m,original:{shadingToonyFactor:m.shadingToonyFactor,shadingShiftFactor:m.shadingShiftFactor,giEqualizationFactor:m.giEqualizationFactor,...(typeof m.outlineWidthFactor==='number'?{outlineWidthFactor:m.outlineWidthFactor}:{})}}})}
  apply(name='source'){
-  if(!['source','soft_anime'].includes(name))throw new Error('invalid_material_preset');
-  for(const {m,original} of this.items){Object.assign(m,original);if(name==='soft_anime'){m.shadingToonyFactor=.82;m.giEqualizationFactor=.85;if(/skin/i.test(m.name))m.shadingShiftFactor=-.08}}
+  if(!['source','soft_anime','premium_r2'].includes(name))throw new Error('invalid_material_preset');
+  for(const [texture,original]of this.textures){texture.anisotropy=name==='premium_r2'?Math.min(4,this.maxAnisotropy):original.anisotropy;texture.needsUpdate=true}
+  for(const {m,original} of this.items){Object.assign(m,original);if(name!=='source'){m.shadingToonyFactor=name==='premium_r2'?.78:.82;m.giEqualizationFactor=name==='premium_r2'?.82:.85;if(/skin/i.test(m.name))m.shadingShiftFactor=name==='premium_r2'?-.07:-.08;if(name==='premium_r2'&&typeof original.outlineWidthFactor==='number'&&original.outlineWidthFactor>0)m.outlineWidthFactor=Math.min(original.outlineWidthFactor,/face|skin/i.test(m.name)?.00045:.0012)}}
  }
  restore(){this.apply('source')}
 }
