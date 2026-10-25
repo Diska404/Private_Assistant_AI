@@ -13,12 +13,15 @@ from web_store import WebStore
 from preview_companion_fixture import state as template
 state=copy.deepcopy(template);state['avatar'].update(asset='leva_original',renderer_gpu='rtx4050',asset_choices=avatar_assets.choices(),realtime_speech=False,native_stream=False,reaction='greeting',reaction_id=1)
 state['rooms']={room:{'model':'fixture','gpu':'fixture','models':{'fixture':'Preview tanpa inferensi'},'gpus':{'fixture':'Tidak memuat LLM'}} for room in ('assistant','chat','secret','companion_avatar')}
-state['activity']='R2 PREVIEW LEVA ASLI · sumber tidak diubah · tidak memuat LLM/mikrofon'
+if '--native' in sys.argv:state['avatar']['renderer_backend']='live2d'
+def preview_activity():
+ label='Hiyori sampel SDK · bukan Leva' if state['avatar'].get('renderer_backend')=='live2d' else state['avatar'].get('asset_choices',{}).get(state['avatar']['asset'],'Avatar preview')
+ return 'R2 PREVIEW · '+label+' · tidak memuat LLM/mikrofon'
+state['activity']=preview_activity()
 reader=Mock();reader.graph.return_value={'nodes':[],'edges':[]}
 bridge=WebBridge(reader,port=20291,store=WebStore(paths.DATA/'web.sqlite3'))
-bridge.update(state);bridge.log('Leva · Preview','Avatar VRM Leva asli dari berkas lokal. Material sumber dipertahankan; ini preview sementara untuk penilaian visual.')
+bridge.update(state);bridge.log('Leva · Preview','Preview avatar lokal untuk penilaian visual. Sampel SDK/pixiv tetap diberi identitas sumbernya; bukan karakter Leva final.')
 state['avatar']['expression']='soft_smile';bridge.update(state);
-if '--native' in sys.argv:state['avatar']['renderer_backend']='live2d';bridge.update(state)
 url=bridge.start();(OUT/'fixture-url.txt').write_text(url,encoding='utf8')
 bridge.ui_last_seen=time.monotonic()
 if '--open' in sys.argv:
@@ -28,6 +31,7 @@ clip=Path(r'D:\AI\AI Lokal Asisten\Leva\verification\higgs-naturalness-20261020\
 try:
  print('Actual Leva preview on loopback port '+str(bridge.server.server_port),flush=True)
  while not (OUT/'stop-fixture').exists() and time.monotonic()-bridge.ui_last_seen<600:
+  if state['avatar']['state']=='interrupted' and time.monotonic()>locals().get('interrupted_until',0):state['avatar']['state']='idle';bridge.update(state)
   if state['avatar']['state']=='speaking' and time.monotonic()>locals().get('audio_until',0):state['avatar']['state']='idle';bridge.update(state)
   try:job=bridge.controls.get(timeout=.1)
   except queue.Empty:continue
@@ -40,6 +44,6 @@ try:
   elif kind=='test_audio' and clip.is_file():
    bridge.publish_audio(clip,{'fixture':True,'pack':'higgs_leva','language':'ja'});state['avatar']['state']='speaking';audio_until=time.monotonic()+28.3
   elif kind in ('stop_voice','companion_stop'):
-   bridge.cancel_audio();state['avatar']['state']='interrupted';state['avatar']['generation_id']+=1
-  bridge.update(state);bridge.finish(job,'completed','Preview terisolasi; tidak menjalankan agent atau mikrofon.')
+   bridge.cancel_audio();state['avatar']['state']='interrupted';state['avatar']['generation_id']+=1;interrupted_until=time.monotonic()+1.5
+  state['activity']=preview_activity();bridge.update(state);bridge.finish(job,'completed','Preview terisolasi; tidak menjalankan agent atau mikrofon.')
 finally:bridge.stop();bridge.store.close()
