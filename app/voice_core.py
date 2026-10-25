@@ -18,7 +18,7 @@ class VoiceEvents:
 
     def put_nowait(self, event):
         with self.lock:
-            if event.get("kind") == "meter":
+            if event.get("kind") in ("meter","local_meter"):
                 self.meter = event
             else:
                 if event.get("kind") in {"error", "stopped"}:
@@ -111,7 +111,7 @@ class PlaybackBuffer:
 def voice_setup(model="gemini-3.8-live", voice="Kore", manual_activity=False):
     instruction = (
         "Kamu Leva, asisten pribadi berbahasa Indonesia yang tenang, perhatian, tanggap dan sedikit jenaka. "
-        "Ini mode suara pratinjau Leva Desktop 0.3. Jawab singkat, alami, dan beri ruang pengguna menyela. "
+        "Ini mode suara pratinjau Leva Desktop 0.4. Jawab singkat, alami, dan beri ruang pengguna menyela. "
         "Jangan mengaku sebagai karakter anime asli. Kamu tidak memiliki tools komputer pada saluran ini. "
         "Jangan mengaku membuka aplikasi, mencari web, mengubah pengaturan atau membuat jadwal. "
         "Tindakan komputer ditangani aplikasi lokal terpisah: pengguna bisa meninjau transkrip dan "

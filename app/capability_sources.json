@@ -1,0 +1,50 @@
+[
+  {
+    "repo": "jaredrhod/fullstack-agent",
+    "url": "https://github.com/jaredrhod/fullstack-agent",
+    "commit": "5bb159f47dbd6fa8f108651d0532a43aef16346b",
+    "license": "AGPL-3.0",
+    "integration": "reference",
+    "detail": "Installer Claude Code; identitas/voice Leva tidak ditimpa."
+  },
+  {
+    "repo": "morluto/rea",
+    "url": "https://github.com/morluto/rea",
+    "commit": "34563fcc9bd92af30668820dcac5635e27181094",
+    "license": "MIT",
+    "integration": "adapter",
+    "detail": "Analisis statis JavaScript/Electron melalui alat rea_analysis; native dan MCP umum belum diaktifkan."
+  },
+  {
+    "repo": "elie222/botdirectory.ai",
+    "url": "https://github.com/elie222/botdirectory.ai",
+    "commit": "d62dd5850d64b0cead1acf461b35e5e0b28f4439",
+    "license": "MIT",
+    "integration": "guide",
+    "detail": "Panduan briefing; bukan runtime atau bot eksternal aktif."
+  },
+  {
+    "repo": "coddingtonbear/obsidian-local-rest-api",
+    "url": "https://github.com/coddingtonbear/obsidian-local-rest-api",
+    "commit": "7c603fbc42918bd9ec6f34ab5b46300bac0d0eaa",
+    "license": "MIT",
+    "integration": "existing_filesystem",
+    "detail": "Vault dibaca melalui adapter filesystem Leva. REST/MCP belum dikonfigurasi."
+  },
+  {
+    "repo": "WorldFlowAI/everything-claude-code",
+    "url": "https://github.com/WorldFlowAI/everything-claude-code",
+    "commit": "432485ba6b92c14fb357276a98957f348bcff9ee",
+    "license": "not-found",
+    "integration": "guide",
+    "detail": "Prosedur verifikasi asli Leva; hooks upstream tidak dijalankan dan file lisensi tidak ditemukan."
+  },
+  {
+    "repo": "Graphify-Labs/graphify",
+    "url": "https://github.com/Graphify-Labs/graphify",
+    "commit": "92741d162b2094ffc2fed58cfbd8ee823e9da62c",
+    "license": "Apache-2.0",
+    "integration": "adapter",
+    "detail": "Graf node-link dibaca melalui code_graph; periksa tanda graf usang sebelum menyimpulkan."
+  }
+]

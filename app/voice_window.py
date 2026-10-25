@@ -18,7 +18,7 @@ class VoiceWindow:
     def __init__(self, main):
         self.main=main
         self.window=tk.Toplevel(main.root)
-        self.window.title("Leva — Neural Voice")
+        self.window.title("Leva — Google Live (Tidak Direkomendasikan)")
         self.window.geometry("1080x860")
         self.window.minsize(950,810)
         self.window.configure(bg="#070d19")
@@ -64,9 +64,10 @@ class VoiceWindow:
         self.meter.pack(pady=(0,10))
         controls=tk.Frame(left,bg="#070d19")
         controls.pack()
-        self.start=self.button(controls,"Mulai suara · Google",self.toggle,True)
+        self.start=self.button(controls,"Mulai suara · Google (Tidak Direkomendasikan)",self.toggle,True)
         self.start.pack(side="left",padx=4)
         self.button(controls,"Sela / hentikan ucapan",self.interrupt).pack(side="left",padx=4)
+        self.button(left,"Voice Packs · suara lokal",self.main.open_voice_packs).pack(pady=6)
         side=tk.Frame(body,bg="#101b2c",padx=18,pady=18,width=302)
         side.grid(row=0,column=1,sticky="ns")
         side.grid_propagate(False)
@@ -167,7 +168,14 @@ class VoiceWindow:
         if not self.input_var.get() or not self.output_var.get():
             self.notice.set("Pilih mikrofon dan perangkat keluaran terlebih dahulu.")
             return
+        if self.main.duplex_window and self.main.duplex_window.service.active:
+            self.notice.set("Hentikan model di Duplex Lab sebelum memulai sesi suara.")
+            return
         self.main.chat.cancel()
+        if getattr(self.main,'local_mic',None):self.main.local_mic.stop()
+        self.main.stop_reply_voice()
+        if getattr(self.main, "voice_pack_window", None):
+            self.main.voice_pack_window.stop()
         self.clear_command()
         self.heard.configure(text="Anda: —")
         self.said.configure(text="Leva: —")
@@ -202,7 +210,7 @@ class VoiceWindow:
         self.orb.preview=False
         self.set_state("sleeping" if sleeping else "idle")
         self.notice.set("Mikrofon mati · audio tidak dikirim")
-        self.start.configure(text="Mulai suara · Google")
+        self.start.configure(text="Mulai suara · Google (Tidak Direkomendasikan)")
         for box in [self.inputs,self.outputs,self.voices,self.demo]:
             box.configure(state="readonly")
 
@@ -256,7 +264,7 @@ class VoiceWindow:
                 self.mic_open=False
                 self.orb.input_level=self.orb.output_level=0
                 self.meter.configure(text="Mikrofon  ░░░░░░░░░░   Suara  ░░░░░░░░░░")
-                self.start.configure(text="Mulai suara · Google")
+                self.start.configure(text="Mulai suara · Google (Tidak Direkomendasikan)")
                 for box in [self.inputs,self.outputs,self.voices,self.demo]:
                     box.configure(state="readonly")
                 if self.orb.mode!="error":
@@ -285,7 +293,7 @@ class VoiceWindow:
 
     def local_text(self):
         self.stop()
-        self.main.mode.set("Lokal · RTX 4050")
+        self.main.mode.set("RTX 4050")
         self.main.root.lift()
 
     def close(self):

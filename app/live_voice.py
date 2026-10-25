@@ -239,12 +239,13 @@ class LiveVoiceService:
         self.events = VoiceEvents()
         self.epoch = 0
         self.worker_command=worker_command
+        self.send_lock=threading.RLock()
 
     @property
     def active(self):
         return self.process is not None and self.process.poll() is None
 
-    def start(self, input_device, output_device, voice="Kore"):
+    def start(self, input_device, output_device, voice="Kore", initial_message=None):
         if self.active:
             return
         self.stop()
@@ -261,7 +262,8 @@ class LiveVoiceService:
             raise
         self.process, self.job = process, job
         try:
-            process.stdin.write(json.dumps({"input_device": input_device, "output_device": output_device, "voice": voice}) + "\n")
+            payload=initial_message if initial_message is not None else {"input_device": input_device, "output_device": output_device, "voice": voice}
+            process.stdin.write(json.dumps(payload) + "\n")
             process.stdin.flush()
         except (OSError,ValueError):
             self.stop()
@@ -284,6 +286,13 @@ class LiveVoiceService:
                 pass
             finally:
                 job.close()
+                # EOF/job closure can precede Windows process termination. Terminal
+                # events must not announce a stopped worker while it still runs.
+                try:
+                    process.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=2)
                 if epoch == self.epoch:
                     if not stopped_seen:
                         self.events.put_nowait({"kind":"error","code":"voice_worker_unexpected_exit"})
@@ -291,12 +300,13 @@ class LiveVoiceService:
         threading.Thread(target=read, daemon=True).start()
 
     def send(self, message):
-        if self.active:
-            try:
-                self.process.stdin.write(json.dumps(message, ensure_ascii=True) + "\n")
-                self.process.stdin.flush()
-            except (OSError, ValueError):
-                self.stop()
+        with self.send_lock:
+            if self.active:
+                try:
+                    self.process.stdin.write(json.dumps(message, ensure_ascii=True) + "\n")
+                    self.process.stdin.flush()
+                except (OSError, ValueError):
+                    self.stop()
 
     def stop(self):
         self.epoch += 1

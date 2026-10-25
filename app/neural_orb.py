@@ -1,5 +1,6 @@
 """Procedural neural sphere. Animation does not load an AI or vision model."""
 import math
+from functools import lru_cache
 import time
 import tkinter as tk
 
@@ -15,16 +16,29 @@ def color(rgb, brightness=1):
     return "#" + "".join(f"{max(0,min(255,int(c*brightness))):02x}" for c in rgb)
 
 
-def particle(index, count, elapsed, state, level=0):
-    z = 1 - 2 * (index + 0.5) / count
-    phi = index * math.pi * (3 - math.sqrt(5))
-    radius = math.sqrt(1 - z*z)
-    x, y = radius*math.cos(phi), radius*math.sin(phi)
+@lru_cache(maxsize=8)
+def sphere_geometry(count):
+    rows=[]
+    for index in range(count):
+        z=1-2*(index+.5)/count
+        phi=index*math.pi*(3-math.sqrt(5))
+        radius=math.sqrt(1-z*z)
+        rows.append((radius*math.cos(phi),radius*math.sin(phi),z,phi,radius))
+    return tuple(rows)
+
+
+def particle_frame(elapsed,state):
     speed = {"sleeping": 0.025, "thinking": 0.38, "speaking": 0.18, "clarifying": 0.09}.get(state, 0.10)
     a = elapsed*speed
-    x, z = x*math.cos(a)+z*math.sin(a), -x*math.sin(a)+z*math.cos(a)
     tilt = 0.22*math.sin(elapsed*0.13)
-    y, z = y*math.cos(tilt)-z*math.sin(tilt), y*math.sin(tilt)+z*math.cos(tilt)
+    return math.cos(a),math.sin(a),math.cos(tilt),math.sin(tilt),1+0.025*math.sin(elapsed*1.4)
+
+
+def particle(index, count, elapsed, state, level=0, frame=None):
+    x,y,z,phi,radius=sphere_geometry(count)[index]
+    ca,sa,ct,st,pulse=frame if frame is not None else particle_frame(elapsed,state)
+    x,z=x*ca+z*sa,-x*sa+z*ca
+    y,z=y*ct-z*st,y*st+z*ct
     if state == "thinking":
         twist = 1.15*y + elapsed*0.13
         x, z = x*math.cos(twist)+z*math.sin(twist), -x*math.sin(twist)+z*math.cos(twist)
@@ -41,7 +55,6 @@ def particle(index, count, elapsed, state, level=0):
         y *= 0.48
     elif state == "connecting":
         x, z = math.cos(phi+elapsed)*radius, math.sin(phi+elapsed)*radius
-    pulse = 1+0.025*math.sin(elapsed*1.4)
     return x*pulse, y*pulse, z*pulse
 
 
@@ -50,10 +63,20 @@ class NeuralOrb(tk.Canvas):
         super().__init__(parent, bg="#070d19", highlightthickness=0, **kwargs)
         self.mode = "idle"
         self.input_level = self.output_level = 0.0
+        self.motion_enabled = True
+        self.static_frame = None
         self.preview = False
         self.economy = False
         self.started = time.monotonic()
+        self.yaw=self.pitch=0.;self.zoom=1.;self.drag_origin=None
+        self.configure(cursor='hand2')
+        self.bind('<ButtonPress-1>',lambda e:setattr(self,'drag_origin',(e.x,e.y,self.yaw,self.pitch)))
+        self.bind('<B1-Motion>',self.orbit)
+        self.bind('<ButtonRelease-1>',lambda e:setattr(self,'drag_origin',None))
+        self.bind('<MouseWheel>',self.wheel)
+        self.bind('<Double-Button-1>',self.reset_view)
         self.current_color = PALETTES["idle"]
+        self._styles={}
         self.count = 320
         self.stars = [self.create_oval(0,0,2,2,fill="#152d42",outline="") for _ in range(48)]
         self.rings = [self.create_oval(0,0,1,1,outline="#1c2e3b",width=1) for _ in range(5)]
@@ -64,6 +87,14 @@ class NeuralOrb(tk.Canvas):
         self.after_id = self.after(50, self.animate)
         self.bind("<Destroy>", self.destroyed, add="+")
 
+    def orbit(self,event):
+        if self.drag_origin:
+            x,y,yaw,pitch=self.drag_origin
+            self.yaw=yaw+(event.x-x)*.008;self.pitch=max(-1.45,min(1.45,pitch+(event.y-y)*.008));self.static_frame=None
+    def wheel(self,event):
+        self.zoom=max(.4,min(2.5,self.zoom*(1.1 if event.delta>0 else 1/1.1)));self.static_frame=None
+    def reset_view(self,event=None):self.yaw=self.pitch=0.;self.zoom=1.;self.static_frame=None
+
     def destroyed(self, event):
         if event.widget is self and self.after_id:
             self.after_cancel(self.after_id)
@@ -73,31 +104,45 @@ class NeuralOrb(tk.Canvas):
         if state in STATES:
             self.mode = state
 
+    def style(self,item,option,value):
+        key=(item,option)
+        if self._styles.get(key)!=value:
+            self.itemconfigure(item,**{option:value});self._styles[key]=value
+
     def animate(self):
         if not self.winfo_exists():
             return
         if not self.winfo_viewable():
             self.after_id = self.after(400, self.animate)
             return
-        elapsed = time.monotonic()-self.started
+        elapsed = time.monotonic()-self.started if self.motion_enabled else 0
+        key = (self.mode, self.winfo_width(), self.winfo_height())
+        if not self.motion_enabled and self.static_frame == key:
+            self.after_id = self.after(500, self.animate)
+            return
+        self.static_frame = key if not self.motion_enabled else None
         width, height = self.winfo_width(), self.winfo_height()
         cx, cy = width/2, height/2
-        radius = min(width,height)*0.42
+        radius = min(width,height)*0.42*self.zoom
         level = self.output_level if self.mode == "speaking" else self.input_level
         if self.preview:
             level = 0.3+0.25*math.sin(elapsed*3)
         target = PALETTES[self.mode]
-        self.current_color = tuple(a+(b-a)*0.08 for a,b in zip(self.current_color,target))
+        self.current_color = tuple(a+(b-a)*0.08 for a,b in zip(self.current_color,target)) if self.motion_enabled else target
         rgb = self.current_color
         points = []
+        frame=particle_frame(elapsed,self.mode)
+        cyaw,syaw,cpitch,spitch=math.cos(self.yaw),math.sin(self.yaw),math.cos(self.pitch),math.sin(self.pitch)
         for index, item in enumerate(self.nodes):
-            x,y,z = particle(index,self.count,elapsed,self.mode,level)
+            x,y,z = particle(index,self.count,elapsed,self.mode,level,frame)
+            x,z=x*cyaw+z*syaw,z*cyaw-x*syaw
+            y,z=y*cpitch-z*spitch,y*spitch+z*cpitch
             perspective = 1/(1.8-z*0.28)
             px,py = cx+x*radius*1.7*perspective, cy+y*radius*1.7*perspective
             light = 0.25+0.68*(z+1)/2
             size = 0.8+1.3*(z+1)/2
             self.coords(item,px-size,py-size,px+size,py+size)
-            self.itemconfigure(item,fill=color(rgb,light))
+            self.style(item,'fill',color(rgb,light))
             points.append((px,py,z))
         for index,item in enumerate(self.edges):
             first = (index*2)%self.count
@@ -105,7 +150,7 @@ class NeuralOrb(tk.Canvas):
             x,y,z=points[first]
             x2,y2,z2=points[second]
             self.coords(item,x,y,x2,y2)
-            self.itemconfigure(item,fill=color(rgb,0.10+0.15*(z+z2+2)/4))
+            self.style(item,'fill',color(rgb,0.10+0.15*(z+z2+2)/4))
         for index,item in enumerate(self.stars):
             angle=index*2.39996+elapsed*0.018
             dist=radius*(1.18+0.4*math.sin(index*1.71)**2)
@@ -115,7 +160,7 @@ class NeuralOrb(tk.Canvas):
             r=radius*(1.02+index*0.055)
             stretch=0.76+0.16*math.sin(elapsed*0.2+index)
             self.coords(item,cx-r,cy-r*stretch,cx+r,cy+r*stretch)
-            self.itemconfigure(item,outline=color(rgb,0.09+index*0.018))
+            self.style(item,'outline',color(rgb,0.09+index*0.018))
         waveform=[]
         amplitude=radius*(0.025+level*0.20) if self.mode in {"speaking","listening"} else radius*0.015
         if self.mode=="sleeping":
@@ -126,10 +171,10 @@ class NeuralOrb(tk.Canvas):
             y=cy+math.sin(index*0.42+elapsed*5)*amplitude*envelope
             waveform.extend([x,y])
         self.coords(self.wave,*waveform)
-        self.itemconfigure(self.wave,fill=color(rgb,0.83))
+        self.style(self.wave,'fill',color(rgb,0.83))
         for index,item in enumerate(self.core):
             r=radius*(0.11+index*0.055)*(1+level*0.12)
             self.coords(item,cx-r,cy-r,cx+r,cy+r)
-            self.itemconfigure(item,outline=color(rgb,0.58-index*0.13))
+            self.style(item,'outline',color(rgb,0.58-index*0.13))
         delay = 500 if self.mode=="sleeping" else 200 if self.economy and self.mode=="idle" else 120 if self.mode=="idle" else 100 if self.economy else 50
         self.after_id=self.after(delay,self.animate)

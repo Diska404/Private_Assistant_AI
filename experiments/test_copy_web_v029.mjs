@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const source=await readFile(new URL('../app/leva_web/copy.js',import.meta.url),'utf8');
+const {copyText}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const long='pesan panjang '.repeat(1500);let received='';
+assert.equal(await copyText(long,{navigator:{clipboard:{writeText:async v=>{received=v}}}}),true);
+assert.equal(received,long);
+let removed=false,focused=false,selected=false;
+const box={style:{},setAttribute(){},select(){selected=true},remove(){removed=true}};
+const env={navigator:{clipboard:{writeText:async()=>{throw Error('denied')}}},document:{body:{append(){}},activeElement:{focus(){focused=true}},createElement(){return box},execCommand(){return true}}};
+assert.equal(await copyText('utuh',env),true);assert.equal(box.value,'utuh');assert.ok(removed&&focused&&selected);
+assert.equal(await copyText('utuh',{navigator:{}}),false);
+env.document.execCommand=()=>false;assert.equal(await copyText('utuh',env),false);
+console.log('PASS: 4 clipboard scenarios; full text preserved, fallback/denial explicit, no upload');

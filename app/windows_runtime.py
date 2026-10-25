@@ -82,6 +82,43 @@ def idle_milliseconds():
     return (ctypes.windll.kernel32.GetTickCount() - info.dwTime) & 0xFFFFFFFF
 
 
+def application_windows(name,process_name='',install_root='',process_ids=()):
+    """Visible top-level window evidence, using process identity when available."""
+    import psutil
+    user=ctypes.WinDLL('user32',use_last_error=True)
+    user.IsWindowVisible.argtypes=[W.HWND]
+    user.GetWindowTextW.argtypes=[W.HWND,W.LPWSTR,ctypes.c_int]
+    user.GetWindowThreadProcessId.argtypes=[W.HWND,ctypes.POINTER(W.DWORD)]
+    found=[];callback_type=ctypes.WINFUNCTYPE(W.BOOL,W.HWND,W.LPARAM)
+    @callback_type
+    def visit(hwnd,_):
+        if not user.IsWindowVisible(hwnd):return True
+        title=ctypes.create_unicode_buffer(1024);user.GetWindowTextW(hwnd,title,1024)
+        if not title.value:return True
+        pid=W.DWORD();user.GetWindowThreadProcessId(hwnd,ctypes.byref(pid))
+        try:
+            process=psutil.Process(pid.value)
+            if pid.value in process_ids:matched=True
+            elif install_root:
+                from pathlib import Path
+                exe=process.exe()
+                matched=bool(exe) and Path(exe).resolve().is_relative_to(Path(install_root).resolve())
+            else:matched=process.name().casefold() in process_name.casefold().split('|') if process_name else name.casefold() in title.value.casefold()
+        except (psutil.Error,OSError):matched=False
+        if matched:found.append(int(hwnd))
+        return True
+    user.EnumWindows.argtypes=[callback_type,W.LPARAM];user.EnumWindows(visit,0)
+    return found
+
+
+def raise_window(hwnd):
+    user=ctypes.WinDLL('user32',use_last_error=True)
+    user.ShowWindow.argtypes=[W.HWND,ctypes.c_int]
+    user.SetForegroundWindow.argtypes=[W.HWND]
+    user.ShowWindow(hwnd,9)
+    return bool(user.SetForegroundWindow(hwnd))
+
+
 def restore_worker_streams():
     """Windowed PyInstaller workers receive explicit pipes rather than a console."""
     import sys

@@ -16,9 +16,9 @@ import urllib.error
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SERVER = Path(os.environ.get("LEVA_LOCAL_SERVER", "llama-server.exe"))
-DEFAULT_MODEL = Path(os.environ.get("LEVA_LOCAL_MODEL", "model.gguf"))
-DEFAULT_DATA = Path(os.environ.get("LEVA_DATA_DIR", Path(os.environ.get("LOCALAPPDATA", Path.home())) / "Leva")) / "experiments"
+DEFAULT_SERVER = Path(r"C:\Users\Raizei\AppData\Local\hermes\runtimes\llamacpp\b10964\cuda\llama-server.exe")
+DEFAULT_MODEL = Path(r"Y:\GFL2_AI\models\hf-cache\models--unsloth--Qwen3.8-27B-GGUF\snapshots\4ca720788d1e01f1bff70c033e0d0028fd02e502\Qwen3.5-4B-Q8_0.gguf")
+DEFAULT_DATA = Path(r"D:\AI\AI Lokal Asisten\experiments")
 SYSTEM = (
     "Kamu Leva, asisten pribadi. Jawab Bahasa Indonesia secara singkat dan jujur. "
     "Percobaan ini hanya teks: kamu tidak mempunyai tools untuk membuka aplikasi, "
@@ -130,6 +130,7 @@ def online_propose_tool(messages: list[dict], key_file: Path, model: str,
 
 
 def select_gpu_devices(device_output: str, mode: str) -> tuple[list[str], list[float]]:
+    if mode not in ('cpu','gpu4050','gpu5070','dual'):raise EngineError('invalid_gpu_mode')
     devices = []
     for line in device_output.splitlines():
         match = re.match(r"\s*(CUDA\d+): (.+?) \((\d+) MiB, (\d+) MiB free\)", line)
@@ -139,6 +140,12 @@ def select_gpu_devices(device_output: str, mode: str) -> tuple[list[str], list[f
     secondary = next((d for d in devices if "RTX 5070" in d[1]), None)
     if mode == "cpu":
         return [], []
+    if mode == "gpu5070":
+        if secondary is None:
+            raise EngineError("rtx5070_not_available")
+        if secondary[2] <= 1024:
+            raise EngineError("insufficient_free_gpu_memory")
+        return [secondary[0]], [float(secondary[2] - 1024)]
     if primary is None:
         raise EngineError("rtx4050_not_available")
     selected = [primary]
@@ -154,11 +161,34 @@ def select_gpu_devices(device_output: str, mode: str) -> tuple[list[str], list[f
     return [d[0] for d in selected], [float(b) for b in budgets]
 
 
+def gpu_visibility(rows, mode):
+    """Use UUIDs before CUDA initializes; never confuse physical and CUDA indices."""
+    if mode=='cpu':return ''
+    names={'gpu4050':('RTX 4050',),'gpu5070':('RTX 5070',),'dual':('RTX 4050','RTX 5070')}.get(mode)
+    if names is None:raise EngineError('invalid_gpu_mode')
+    selected=[]
+    for name in names:
+        matches=[r for r in rows if name in r['name']]
+        if len(matches)!=1 or not matches[0].get('uuid','').startswith('GPU-'):raise EngineError('required_gpu_not_available')
+        selected.append(matches[0]['uuid'])
+    if len(set(selected))!=len(selected):raise EngineError('required_gpu_not_available')
+    return ','.join(selected)
+
+
+def verify_gpu_model_buffers(log_text, devices):
+    buffers={m[1]:float(m[2]) for m in re.finditer(r'(CUDA\d+) model buffer size\s*=\s*([\d.]+) MiB',log_text)}
+    if set(buffers)!=set(devices) or any(buffers[d]<=0 for d in devices):
+        raise EngineError('local_gpu_model_placement_mismatch')
+    return buffers
+
+
 class LocalEngine:
     def __init__(self, server: Path, model: Path, data_dir: Path, mode: str = "gpu4050",
                  system: str = SYSTEM, max_output_tokens: int = 128,
                  context_size: int = 2048, response_json: bool = False,
-                 sampling: dict | None = None, thinking_budget: int = 0):
+                 sampling: dict | None = None, thinking_budget: int = 0,
+                 extra_server_args: tuple[str, ...] = (), startup_timeout: float = 90,
+                 chat_template_kwargs: dict | None = None):
         self.server, self.model, self.data_dir = server, model, data_dir
         self.process = None
         self.log = None
@@ -177,6 +207,9 @@ class LocalEngine:
         self.response_json = response_json
         self.sampling = sampling or {"temperature": 0.2}
         self.thinking_budget = thinking_budget
+        self.extra_server_args = tuple(extra_server_args)
+        self.startup_timeout = startup_timeout
+        self.chat_template_kwargs = dict(chat_template_kwargs or {})
 
     def gpu_snapshot(self):
         executable = shutil.which("nvidia-smi")
@@ -225,11 +258,18 @@ class LocalEngine:
             if file.read(4) != b"GGUF":
                 raise EngineError("local_model_not_gguf")
         gpu_args = ["--device", "none", "--gpu-layers", "0"]
+        worker_env = os.environ.copy()
+        worker_env.pop("GEMINI_API_KEY", None)
+        worker_env.pop("GOOGLE_API_KEY", None)
+        worker_env["LLAMA_API_KEY"] = self.api_key
+        worker_env['CUDA_VISIBLE_DEVICES']=''
         if self.mode != "cpu":
             self.gpu_snapshot_before = self.gpu_snapshot()
+            worker_env['CUDA_VISIBLE_DEVICES']=gpu_visibility(self.gpu_snapshot_before,self.mode)
+            self.visible_gpu_uuids=worker_env['CUDA_VISIBLE_DEVICES'].split(',')
             try:
                 discovery = subprocess.run([str(self.server), "--list-devices"],
-                    capture_output=True, encoding="utf-8", timeout=20,
+                    capture_output=True, encoding="utf-8", timeout=20,env=worker_env,
                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             except (OSError, subprocess.TimeoutExpired):
                 raise EngineError("gpu_discovery_failed") from None
@@ -251,25 +291,25 @@ class LocalEngine:
         self.log = (self.data_dir / f"local-runtime-{self.mode}.log").open("w", encoding="utf-8")
         started = time.monotonic()
         try:
-            worker_env = os.environ.copy()
-            worker_env.pop("GEMINI_API_KEY", None)
-            worker_env.pop("GOOGLE_API_KEY", None)
-            worker_env["LLAMA_API_KEY"] = self.api_key
             self.process = subprocess.Popen([
                 str(self.server), "--model", str(self.model), "--host", "127.0.0.1",
                 "--port", str(port), *gpu_args,
                 "--threads", "4", "--threads-batch", "4", "--ctx-size", str(self.context_size),
                 "--parallel", "1", "--reasoning-budget", str(self.thinking_budget), "--no-webui",
                 "--cors-origins", "http://127.0.0.1", "--no-cors-credentials",
+                *self.extra_server_args,
+                "-lv", "4",  # Startup device/buffer evidence is required by the GPU contract.
             ], stdout=self.log, stderr=self.log, env=worker_env,
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-            deadline = started + 90
+            deadline = started + self.startup_timeout
             while time.monotonic() < deadline:
                 if self.process.poll() is not None:
                     raise EngineError("local_runtime_exited_during_startup")
                 try:
                     health = self.request("/health", timeout=1)
                     if health.get("status") == "ok":
+                        if self.mode!='cpu':
+                            self.model_gpu_buffers_mib=verify_gpu_model_buffers(Path(self.log.name).read_text(encoding='utf8',errors='replace'),self.devices)
                         self.load_seconds = round(time.monotonic() - started, 3)
                         if self.mode != "cpu":
                             self.gpu_snapshot_loaded = self.gpu_snapshot()
@@ -289,7 +329,7 @@ class LocalEngine:
             payload = {
                 "messages": [{"role": "system", "content": self.system}] + messages,
                 "max_tokens": self.max_output_tokens, **self.sampling,
-                "chat_template_kwargs": {"enable_thinking": False},
+                "chat_template_kwargs": {"enable_thinking": False, **getattr(self,"chat_template_kwargs",{})},
             }
             if self.response_json:
                 payload["response_format"] = {"type": "json_object"}
@@ -302,16 +342,40 @@ class LocalEngine:
         except (OSError, ValueError, KeyError, IndexError):
             raise EngineError("local_generation_failure") from None
 
+    def generate_stream(self,messages,on_delta,on_event=lambda event:None):
+        from llm_stream import generate_stream
+        return generate_stream(self,messages,on_delta,on_event)
+
+    def fit_tool_messages(self,messages,tools):
+        """Count the actual rendered template, including tool declarations, before inference."""
+        selected=[dict(m) for m in messages];removed=0
+        reserve=min(1024,max(256,self.max_output_tokens));limit=self.context_size-reserve
+        for _ in range(len(selected)+1):
+            try:
+                rendered=self.request('/apply-template',{'messages':[{'role':'system','content':self.system}]+selected,'tools':tools,'tool_choice':'required','parallel_tool_calls':False,'chat_template_kwargs':{'enable_thinking':self.thinking_budget!=0,**getattr(self,"chat_template_kwargs",{})}},timeout=10)
+                tokens=self.request('/tokenize',{'content':rendered['prompt'],'add_special':True},timeout=10)['tokens']
+                if not isinstance(tokens,list):raise ValueError('invalid_token_count')
+            except (OSError,ValueError,KeyError,TypeError):
+                self.last_tool_budget={'available':False,'trimmed_messages':removed};return selected
+            self.last_tool_budget={'available':True,'prompt_tokens':len(tokens),'context_size':self.context_size,'reserved_output_tokens':reserve,'trimmed_messages':removed}
+            if len(tokens)<=limit:return selected
+            # Keep the executable goal, current context/checkpoint, and latest observation.
+            candidates=[i for i,m in enumerate(selected[:-1]) if not m.get('content','').startswith(('Tujuan aktif pengguna,','Konteks host untuk permintaan terakhir','Checkpoint ringkas host;'))]
+            if not candidates:raise EngineError('native_tool_context_overflow')
+            selected.pop(candidates[0]);removed+=1
+        raise EngineError('native_tool_context_overflow')
+
     def propose_tool(self, messages: list[dict], tools: list[dict]) -> dict:
         """Use the model's embedded template and server's native tool-call parser."""
         self.start()
+        messages=self.fit_tool_messages(messages,tools)
         try:
             result = self.request("/v1/chat/completions", {
                 "messages": [{"role": "system", "content": self.system}] + messages,
                 "tools": tools, "tool_choice": "required", "parallel_tool_calls": False,
                 "max_tokens": self.max_output_tokens, **self.sampling,
-                "chat_template_kwargs": {"enable_thinking": self.thinking_budget != 0},
-            }, timeout=90)
+                "chat_template_kwargs": {"enable_thinking": self.thinking_budget != 0, **getattr(self,"chat_template_kwargs",{})},
+            }, timeout=max(90,min(240,20+self.max_output_tokens/12)))
             choice = result["choices"][0]
             message = choice["message"]
             calls = message.get("tool_calls", [])
@@ -326,9 +390,18 @@ class LocalEngine:
             function = calls[0]["function"]
             arguments = function.get("arguments", {})
             if isinstance(arguments, str):
-                arguments = json.loads(arguments)
+                try:arguments = json.loads(arguments)
+                except ValueError:
+                    output['error']='malformed_native_tool_arguments';return output
             output["action"], output["args"] = function["name"], arguments
             return output
+        except TimeoutError:
+            raise EngineError("native_tool_timeout") from None
+        except urllib.error.HTTPError as error:
+            try:detail=error.read(2000).decode('utf8',errors='replace')
+            except OSError:detail=''
+            if error.code==400 and 'context' in detail.lower():raise EngineError('native_tool_context_overflow') from None
+            raise EngineError('native_tool_http_'+str(error.code)) from None
         except (OSError, ValueError, KeyError, IndexError):
             raise EngineError("native_tool_response_or_transport_failure") from None
 

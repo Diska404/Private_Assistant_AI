@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "packs": [
+    {
+      "id": "leva_gfl2",
+      "name": "Leva · Girls’ Frontline 2",
+      "engine": "piper_seedvc",
+      "status": "candidate_file_proven",
+      "description": "Kandidat Leva A pilihan pengguna: Piper Indonesia → Seed-VC dengan referensi A yang diuji bilingual v3. Dapat menghasilkan ucapan Indonesia baru; belum fine-tuning khusus Leva atau streaming engine.",
+      "source_url": "https://www.nexusmods.com/readyornot/mods/5843",
+      "other_sources": [
+        "https://www.nexusmods.com/cyberpunk2077/mods/30628"
+      ],
+      "rights": "Referensi mod lokal pengguna untuk eksperimen pribadi; tidak mengklaim lisensi distribusi ulang.",
+      "languages_verified": [
+        "id-ID"
+      ],
+      "streaming_verified": false
+    },
+    {
+      "id": "higgs_leva", "name": "Higgs · referensi Leva A · gaya adaptif", "engine": "audio_cpp", "status": "experimental_adapter",
+      "description": "Sintesis langsung Indonesia/Jepang dengan referensi Leva A. Mode asisten/personal mengatur pembawaan, bukan mengganti identitas atau melatih bobot baru.",
+      "rights": "Eksperimen pribadi lokal; model Higgs memakai lisensi khusus. Referensi tidak diklaim bebas distribusi.",
+      "source_url": "https://huggingface.co/bosonai/higgs-tts-3-4b", "languages_verified": ["id-ID","ja-JP"], "streaming_verified": false
+    },
+    {
+      "id": "higgs_native", "name": "Higgs · native tanpa referensi · pembanding", "engine": "audio_cpp", "status": "experimental_adapter",
+      "description": "Engine Higgs yang sama tanpa cloning. Identitas pembicara tidak dijamin tetap antar-teks atau antarbahasa; bandingkan naturalitas dan ekspresinya.",
+      "rights": "Model Higgs memakai lisensi khusus; eksperimen lokal.",
+      "source_url": "https://huggingface.co/bosonai/higgs-tts-3-4b", "languages_verified": ["id-ID","ja-JP"], "streaming_verified": false
+    },
+    {
+      "id": "higgs_jp_identity", "name": "Higgs · suara Jepang native sebagai referensi · bilingual", "engine": "audio_cpp", "status": "experimental_adapter",
+      "description": "Referensi berasal dari sampel Jepang native panjang yang disukai pengguna. Identitas yang sama dipakai untuk Indonesia/Jepang; gaya asisten/personal dikontrol terpisah. Belum dinilai sebagai pemenang.",
+      "rights": "Referensi suara hasil sintesis lokal; lihat lisensi Higgs.",
+      "source_url": "https://huggingface.co/bosonai/higgs-tts-3-4b", "languages_verified": [], "streaming_verified": false
+    },
+    {
+      "id": "omnivoice_leva", "name": "OmniVoice · referensi Leva A · pembanding", "engine": "audio_cpp", "status": "experimental_adapter",
+      "description": "Engine alternatif dengan referensi Leva A yang sama. Tidak memakai tag emosi Higgs; kemampuan ekspresi perlu didengar terpisah.",
+      "rights": "Lihat lisensi model OmniVoice; referensi pengguna tidak diklaim bebas distribusi.",
+      "source_url": "https://github.com/k2-fsa/OmniVoice", "languages_verified": [], "streaming_verified": false
+    },
+    {
+      "id": "omnivoice_native", "name": "OmniVoice · native tanpa referensi · pembanding", "engine": "audio_cpp", "status": "experimental_adapter",
+      "description": "Suara otomatis engine OmniVoice tanpa referensi identitas. Pembanding kualitas dan beban, bukan suara karakter Leva yang sudah terverifikasi.",
+      "rights": "Lihat lisensi model OmniVoice.",
+      "source_url": "https://github.com/k2-fsa/OmniVoice", "languages_verified": [], "streaming_verified": false
+    },
+    {
+      "id": "neutral_id",
+      "name": "Indonesia netral · Piper",
+      "engine": "piper",
+      "status": "file_proven",
+      "description": "TTS lokal Indonesia untuk ucapan baru. Suara sementara; bukan suara karakter Leva.",
+      "source_url": "https://huggingface.co/rhasspy/piper-voices/tree/main/id/id_ID/news_tts/medium",
+      "rights": "Lihat MODEL_CARD pada model Piper-ID; izin engine dan data suara berbeda.",
+      "languages_verified": [
+        "id-ID"
+      ],
+      "streaming_verified": false
+    },
+    {
+      "id": "shiroko_rvc",
+      "name": "Shiroko · arsip eksperimen RVC",
+      "engine": "rvc",
+      "status": "historical_proof",
+      "description": "Piper → RVC v2 telah diuji pada RTX 4050. Sampel dan benchmark dipertahankan; bukan prioritas utama dan belum terhubung ke percakapan langsung.",
+      "source_url": "",
+      "rights": "ZIP lokal pengguna; izin distribusi ulang belum diverifikasi.",
+      "languages_verified": [
+        "id-ID"
+      ],
+      "streaming_verified": false
+    }
+  ]
+}

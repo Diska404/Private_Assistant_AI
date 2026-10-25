@@ -1,0 +1,55 @@
+{
+  "version": "0.40.0",
+  "status": "candidate_partial_R1",
+  "app_tests": 610,
+  "skips": 1,
+  "application_successful": true,
+  "javascript_scripts": 12,
+  "packaged_checks": 102,
+  "source_asset_unchanged": true,
+  "previous_binary_unchanged": true,
+  "selected_preferences_unchanged": true,
+  "production_promoted": false,
+  "uv_or_gpu_global_changes": false,
+  "renderer_profiles": {
+    "scope": "short live preview; UV unchanged; no LLM inference",
+    "profiles": [
+      {
+        "requested": "balanced",
+        "observed": "Frame p95 33.4 ms \u00c2\u00b7 draw 1.45 ms \u00c2\u00b7 120 sampel \u00c2\u00b7 balanced \u00c2\u00b7 fisika 30 Hz \u00c2\u00b7 302 joint / 0 collider \u00c2\u00b7 35 MToon \u00c2\u00b7 35 draw / 150096 tri"
+      },
+      {
+        "requested": "premium",
+        "observed": "Frame p95 16.8 ms \u00c2\u00b7 draw 1.33 ms \u00c2\u00b7 120 sampel \u00c2\u00b7 premium \u00c2\u00b7 fisika 60 Hz \u00c2\u00b7 302 joint / 0 collider \u00c2\u00b7 35 MToon \u00c2\u00b7 35 draw / 150096 tri"
+      },
+      {
+        "requested": "gaming",
+        "observed": "Frame p95 33.5 ms \u00c2\u00b7 draw 1.11 ms \u00c2\u00b7 120 sampel \u00c2\u00b7 gaming \u00c2\u00b7 fisika 15 Hz \u00c2\u00b7 302 joint / 0 collider \u00c2\u00b7 35 MToon \u00c2\u00b7 35 draw / 150096 tri"
+      },
+      {
+        "requested": "eco",
+        "observed": "Frame p95 66.8 ms \u00c2\u00b7 draw 1.17 ms \u00c2\u00b7 120 sampel \u00c2\u00b7 eco \u00c2\u00b7 fisika 10 Hz \u00c2\u00b7 302 joint / 0 collider \u00c2\u00b7 35 MToon \u00c2\u00b7 35 draw / 150096 tri"
+      }
+    ],
+    "renderer": "Browser: ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 (0x00002F04) Direct3D11 vs_5_0 ps_5_0, D3D11) \u00c2\u00b7 permintaan rtx4050 \u00c2\u00b7 belum cocok/terverifikasi"
+  },
+  "audio_demo": {
+    "sample_rate": 48000,
+    "channels": 2,
+    "seconds": 12.0,
+    "samples": 1152000,
+    "rms": 0.09573329717802906,
+    "peak": 0.5622820854187012
+  },
+  "training": "procedural calibration and reply-pattern tags; no neural training",
+  "three_d": "active development, user acceptance pending",
+  "two_d": "deferred until user accepts 3D quality",
+  "not_completed": [
+    "new source shader/texture/mesh edits",
+    "new hair/ribbon/collar colliders",
+    "clipping-free certification",
+    "phoneme-accurate visemes",
+    "actual RTX4050 renderer binding",
+    "long-run/physical Android acceptance"
+  ]
+}

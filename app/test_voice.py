@@ -89,6 +89,8 @@ class VoicePrivacyLifecycleTests(unittest.TestCase):
         window.set_busy=Mock()
         window.add=Mock()
         window.activity=Mock()
+        window.hud=Mock()
+        window.local_mic=Mock();window.hardware=Mock();window.poll_local_mic=Mock()
         window.poll()
         window.voice_window.stop.assert_called_once_with(sleeping=True)
 

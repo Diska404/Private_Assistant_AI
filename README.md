@@ -1,130 +1,98 @@
-<p align="center">
-  <img src="docs/assets/leva-banner.svg" alt="LEVA — Suara. Konteks. Tindakan. Asisten AI pribadi untuk Windows, dalam pengembangan." width="1200" />
-</p>
+<p align="center"><img src="docs/assets/leva-banner.svg" alt="LEVA — local AI assistant, 0.40.0 R1 development snapshot" width="1200" /></p>
 
-<p align="center">
-  <a href="#tentang-leva"><b>Tentang</b></a> ·
-  <a href="#tiga-ruang-satu-asisten"><b>Ruang percakapan</b></a> ·
-  <a href="#peta-modul"><b>Arsitektur</b></a> ·
-  <a href="#jelajahi-proyek"><b>Dokumentasi</b></a> ·
-  <a href="#menjalankan-source-repository"><b>Mulai</b></a>
-</p>
+<p align="center"><a href="#tentang-leva"><b>Tentang</b></a> · <a href="#ruang-kerja"><b>Ruang kerja</b></a> · <a href="#avatar-3d--r1"><b>Avatar 3D</b></a> · <a href="#alur-modul-avatar"><b>Arsitektur</b></a> · <a href="#menjalankan-source"><b>Source & validasi</b></a></p>
 
 # Leva — Personal AI Assistant
 
-Membangun asisten di laptop yang menghubungkan **percakapan, konteks, dan pekerjaan**. Leva dikembangkan untuk mendengar, merespons, memakai alat yang tersedia, dan membantu pekerjaan melalui antarmuka desktop maupun HP.
+Asisten AI pribadi untuk Windows yang menghubungkan percakapan, suara modular, konteks, dan alat pekerjaan pada laptop. Desktop dan web memakai layanan pelaksana yang sama; HP menjadi antarmuka bagi laptop.
 
-> **Status proyek:** dalam pengembangan. Peta arsitektur mendokumentasikan snapshot **0.28.0** pada **23 Oktober 2026**. Source yang tersedia di repository ini masih import historis **0.3.0**. Tampilan, diagram, dan kemampuan pengembangan di bawah tidak berarti seluruhnya tersedia setelah menjalankan source 0.3.0.
+> **Snapshot source: 0.40.0, 25 Oktober 2026.** Repository kini berisi source runtime pengembangan yang diperbarui dari import historis 0.3.0. R1 adalah kandidat peningkatan animasi/ekspresi avatar 3D, belum avatar premium final. Model AI, model karakter, voice pack, API key dan data pengguna tidak disertakan.
 
 ## Tentang Leva
 
-<table>
-  <tr>
-    <td width="33%" valign="top">
-      <h3>01 / Percakapan</h3>
-      <p>Beberapa ruang dengan tujuan berbeda, riwayat per ruang, serta pilihan model untuk kebutuhan percakapan dan analisis.</p>
-    </td>
-    <td width="33%" valign="top">
-      <h3>02 / Pekerjaan</h3>
-      <p>Agent, alat pada laptop, progres, dan jurnal tugas yang menghubungkan tujuan pengguna dengan tindakan serta hasilnya.</p>
-    </td>
-    <td width="33%" valign="top">
-      <h3>03 / Suara &amp; HP</h3>
-      <p>Pengenalan suara, teks, terjemahan, dan sintesis sebagai tahap terpisah. HP menjadi antarmuka bagi mesin pelaksana di laptop.</p>
-    </td>
-  </tr>
-</table>
+<table><tr><td width="33%" valign="top"><h3>Percakapan</h3><p>Ruang dengan tujuan berbeda, konteks per ruang, dan pemilihan model sesuai kebutuhan. ASR, LLM dan TTS merupakan tahap terpisah.</p></td><td width="33%" valign="top"><h3>Pekerjaan</h3><p>Alat laptop, terminal, berkas, progres dan jurnal tugas. Keberhasilan perlu diperiksa dari hasil alat; kendali universal semua aplikasi belum dijamin.</p></td><td width="33%" valign="top"><h3>Karakter</h3><p>Avatar Leva 3D dengan controller ekspresi dan gerak, suara modular, serta UI web yang dapat dipakai dari perangkat pribadi.</p></td></tr></table>
 
-Desain ini dipetakan dari kode pengembangan **0.28.0**. Keberhasilan setiap pekerjaan tetap perlu dibuktikan lewat pengujian langsung, termasuk respons suara, pembagian GPU, dan kendali aplikasi.
+## Ruang kerja
 
-## Tiga ruang, satu asisten
+| Ruang | Arah penggunaan | Batas |
+|---|---|---|
+| Asisten | Tugas dengan alat yang tersedia | Bukan jaminan dapat mengontrol setiap aplikasi/canvas/game |
+| Chat | Percakapan dan analisis kiriman | Jalur percakapan dibedakan dari eksekusi alat |
+| Secret ♡ | Percakapan personal | Nama ruang bukan enkripsi; akses perangkat mengikuti konfigurasi pengguna |
+| Leva ♡ 3D | Preview companion dan animasi avatar | Masih pengembangan; membutuhkan aset pribadi yang penggunaannya sesuai |
 
-| Ruang        | Untuk apa?                                                | Jalur yang dipetakan                                                                                            |
-| :----------- | :-------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
-| **Asisten**  | Menjalankan pekerjaan pada laptop                         | Perintah desktop atau delegasi ke agent dan alat host; hasil tindakan dicatat untuk pemeriksaan dan kelanjutan. |
-| **Chat**     | Analisis, pertanyaan, informasi, dan percakapan fleksibel | Riwayat per ruang, pemilihan model, serta riset publik melalui jalur terbatas; tanpa executor kendali PC.       |
-| **Secret ♡** | Percakapan personal dengan respons yang diupayakan cepat  | Jalur percakapan tersendiri. Perpindahan ke Chat/Asisten menawarkan penyalinan riwayat setelah pengguna setuju. |
+## Avatar 3D — R1
 
-Riwayat yang tersimpan dan konteks aktif model memiliki batas berbeda. Menyalin riwayat tidak berarti seluruh isinya selalu dimasukkan sekaligus ke dalam konteks model.
+**3D dikerjakan lebih dahulu. Versi 2D ditunda sampai kualitas 3D dinilai cukup oleh pemilik proyek.** Placeholder lama tidak dipresentasikan sebagai versi 2D final.
 
-## Peta modul
+![Ekspresi dari rekaman renderer](docs/avatar/r1/media/smile-frame.png)
 
-<p align="center">
-  <img src="docs/assets/leva-metrics.svg" alt="Snapshot analisis statis: 167 berkas, 2.356 node, 7.381 hubungan, 106 kelompok modul." width="1200" />
-</p>
+[Lihat rekaman transisi wajah tanpa audio](docs/avatar/r1/media/r1-facial-transitions.mp4) · [Laporan visual](docs/avatar/r1/LEVA_PREMIUM_VISUAL_COMPARISON.md) · [Hasil QA](docs/avatar/r1/LEVA_AVATAR_PERFORMANCE_QA.md)
 
-Desktop, transkrip mikrofon, dan permintaan HP bertemu pada **`LevaWindow`**. Pesan kemudian diarahkan ke ruang percakapan atau jalur Asisten; hasilnya kembali sebagai teks, status pekerjaan, dan audio.
+Yang sudah dikerjakan pada R1:
 
-[![Diagram hubungan 13 modul Leva: input, koordinator, percakapan, agent, jurnal, dan output.](docs/assets/leva-module-map.svg)](docs/architecture/README.md)
+- Gerak kepala, napas, torso dan gaze yang kecil serta mengikuti state.
+- Blending ekspresi, cooldown, interval blink bervariasi dan penanganan morph yang tidak tersedia.
+- Mulut berdasarkan audio yang benar-benar diputar, dengan noise gate dan attack/release smoothing. Ini belum lip-sync phoneme yang akurat.
+- Tag ekspresi konservatif dari balasan; kalibrasi prosedural, bukan neural-network training.
+- Scene lights Premium Studio, Soft Anime, Night dan Dark Environment. Material model sumber tetap dipertahankan.
+- Inspector developer: baseline/R1, physics on/off/reset, pose freeze, slow motion, bobot ekspresi dan telemetri renderer.
+- Buffer timing terbatas dan empat profil render/fisika yang mengubah runtime.
 
-<p align="center">
-  <a href="docs/architecture/README.md"><b>Baca arsitektur →</b></a> ·
-  <a href="docs/architecture/graphify-out/LEVAWINDOW_FLOW.md"><b>Telusuri LevaWindow →</b></a> ·
-  <a href="docs/architecture/graphify-out/graph.html"><b>Unduh graf interaktif →</b></a>
-</p>
+**Belum selesai:** shader/tekstur/mesh baru pada sumber, collider rambut/pita/pakaian tambahan, sertifikasi bebas clipping, articulation phoneme, binding renderer ke RTX4050, pengujian jangka panjang dan penerimaan visual pengguna. Snapshot ini tidak menyamakan kontrol scene dengan modifikasi aset premium.
 
-Diagram di atas merupakan ringkasan terkurasi dari pemeriksaan kode. **Graf lengkap bersifat tanpa arah** dan juga mencakup simbol, dokumen, serta pengujian; jalur terpendeknya bukan urutan eksekusi aplikasi. Untuk graf interaktif, unduh `graph.html` dan buka melalui browser. Pustaka visualisasinya dimuat dari CDN dan memerlukan internet.
+| Bukti pengembangan di Windows | Hasil |
+|---|---|
+| Regresi aplikasi | 610 tes dijalankan; satu skip khusus engine gambar |
+| Skrip JavaScript | 12 skrip lulus; termasuk 15 behavior checks controller baru |
+| Pemeriksaan paket kandidat lokal | 102 lulus |
+| Renderer yang teramati | RTX5070; request RTX4050 belum cocok |
+| Sampel frame p95 | Premium 16,8 ms; Balanced 33,4 ms; Gaming 33,5 ms; Eco 66,8 ms |
 
-## Antarmuka & catatan pengembangan
+Angka frame berasal dari window pendek tanpa LLM, dengan profil UV pengguna dipertahankan. Bukan sertifikasi performa normal, stress test atau bukti Android fisik. [Ringkasan terstruktur](docs/avatar/r1/verification-summary.json).
 
-Pratinjau berikut berasal dari **halaman proyek pada portofolio**, yang memperkenalkan Leva dan menyediakan penjelajah modul. Ini dokumentasi proyek, bukan screenshot aplikasi desktop Leva.
+## Alur modul avatar
 
-[![Pratinjau halaman portofolio Leva dengan identitas visual hijau gelap, ringkasan proyek, dan metrik graf.](docs/assets/leva-portfolio-preview.png)](https://github.com/Diska404/Projek_Portofolio/tree/main/apps/web/src/app/projects/leva)
-
-Portofolio menyertakan pilihan modul melalui tombol, uraian peran, rujukan sumber, dan tautan graf lengkap. Implementasinya tersedia pada [repository portofolio](https://github.com/Diska404/Projek_Portofolio). README ini menyajikan ringkasan visual yang dapat dibaca langsung di GitHub.
-
-## Jelajahi proyek
-
-| Dokumen                                                                     | Isi                                                                                                 |
-| :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
-| [Arsitektur Leva](docs/architecture/README.md)                              | Alur utama, diagram Mermaid, cakupan, dan batas bukti.                                              |
-| [Penelusuran LevaWindow](docs/architecture/graphify-out/LEVAWINDOW_FLOW.md) | Hubungan desktop, Chat/Secret, suara, HP, dan agent beserta lokasi sumber.                          |
-| [Laporan Graphify](docs/architecture/graphify-out/GRAPH_REPORT.md)          | Kelompok modul, komponen penghubung, hubungan inferensi, dan pertanyaan lanjutan.                   |
-| [Graf JSON](docs/architecture/graphify-out/graph.json)                      | 2.356 node dan 7.381 hubungan untuk penelusuran lanjutan.                                           |
-| [Audit integritas](docs/architecture/graphify-out/graph-health.json)        | Referensi ekstraksi yang belum terselesaikan, self-loop, dan penggabungan hubungan.                 |
-| [Provenance & checksum](docs/architecture/graphify-out/SNAPSHOT.json)       | Asal snapshot, versi, cakupan, serta hash berkas publik.                                            |
-| [Panduan source 0.3.0](docs/SOURCE_SNAPSHOT_0_3.md)                         | Instalasi, konfigurasi, Neural Voice, pengujian, dan build untuk source historis di repository ini. |
-
-## Menjalankan source repository
-
-**Panduan ini menjalankan source 0.3.0**, dengan Windows 10/11, Python 3.12, dan Tkinter. Jalankan dari root repository:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -B app\main.py
+```mermaid
+flowchart LR
+  Reply[Balasan pada ruang VTuber] --> Tags[avatar_emotion: tag pola sederhana]
+  Tags --> Director[AvatarDirector / state host]
+  Director --> Bridge[WebBridge terautentikasi]
+  Bridge --> Stage[CompanionStage]
+  Audio[Audio Higgs / voice pack lokal] --> Playback[RemoteVoice: buffer yang diputar]
+  Playback --> Controller[NaturalPerformance]
+  Stage --> Controller
+  Asset[VRM pribadi + hash manifest] --> Loader[Loader aset lokal]
+  Loader --> VRM[three-vrm]
+  Controller --> VRM
+  Physics[Fixed timestep / fisika sumber] --> VRM
+  Scene[Kamera dan pencahayaan scene] --> Render[WebGL renderer]
+  VRM --> Render
 ```
 
-Source historis menyediakan chat Google dengan fallback lokal yang didukung, perintah Chrome/profil, pengaturan, kebiasaan, jeda, serta Neural Voice Google Live. Saat sesi Google Live aktif, audio mikrofon dikirim ke Google. Pilihan runtime/model dan keterbatasan versi tersebut dijelaskan pada [panduan source](docs/SOURCE_SNAPSHOT_0_3.md).
+Diagram ini memetakan komponen R1 pada snapshot sekarang. Peta Graphify seluruh proyek di [docs/architecture](docs/architecture) tetap merupakan arsip arsitektur 0.28.0 dan belum dihitung sebagai graph penuh 0.40.0.
 
-Gunakan credential milik sendiri melalui `GEMINI_API_KEY` atau berkas lokal `API Key.txt` yang diabaikan Git. Model, runtime inferensi, dan executable tidak dibundel bersama repository.
+## Menjalankan source
 
-<details>
-<summary><b>Konfigurasi lokal dan perintah pengujian source 0.3.0</b></summary>
-
-| Environment         | Fungsi                                           |
-| :------------------ | :----------------------------------------------- |
-| `LEVA_DATA_DIR`     | Folder data/log/preferensi.                      |
-| `LEVA_LOCAL_SERVER` | Path runtime `llama-server.exe` yang kompatibel. |
-| `LEVA_LOCAL_MODEL`  | Path model GGUF lokal.                           |
+Source menargetkan Windows dan menggunakan runtime/model yang dikonfigurasi terpisah. Sesuaikan `app/paths.py` (DATA), registry model dan adapter lokal sebelum menjalankan aplikasi normal. Folder data, credential, VRM dan model tidak dibuat ulang dari repository ini.
 
 ```powershell
-.\.venv\Scripts\python.exe -B -m unittest discover -s experiments -p 'test_*.py' -q
-.\.venv\Scripts\python.exe -B -m unittest discover -s app -p 'test_*.py' -q
+python -m pip install -r requirements-preview.txt
+python experiments/run_isolated_regressions.py ./local-data/verification
+node experiments/test_avatar_performance.mjs
 ```
 
-Angka historis snapshot 0.3 adalah 99 tests: 61 eksperimen dan 38 aplikasi. Pengujian memakai fixture/mocks dan tidak membuktikan semua fitur snapshot pengembangan 0.28.0.
+Salinan source yang diekspor ini juga telah diuji: 610 tes aplikasi (satu skip engine gambar) dan 12 skrip JavaScript berhasil pada 25 Oktober 2026. Regresi mengalihkan DATA ke folder sementara sebelum import aplikasi. Model STT/TTS/LLM dan engine gambar mempunyai environment/dependensi tambahan; file requirements dasar tidak memasang seluruh engine tersebut. Untuk aplikasi yang telah dikonfigurasi lokal, entrypoint adalah `python app/main.py`. Tinjau pengaturan audio/startup yang sesuai untuk perangkat Anda.
 
-</details>
+`SOURCE_SNAPSHOT.json` mencatat file source yang diekspor dan batasnya. Endpoint tailnet pribadi diganti contoh pada ekspor; tidak menyertakan history, key, database, voice pack, rekaman suara atau arsip mod.
 
-## Bukti, batas, dan privasi
+## Dokumentasi pengembangan
 
-- **Analisis statis:** angka graf menunjukkan struktur hasil ekstraksi. Graf tidak membuktikan kendali penuh laptop atau kestabilan percakapan suara saat dijalankan.
-- **Integritas:** ekstraksi mentah mencatat 1.056 referensi endpoint belum terselesaikan, 13 self-loop, dan 189 penggabungan hubungan. Graf akhir memiliki nol endpoint tidak valid. Hubungan `INFERRED` dan `AMBIGUOUS` memerlukan verifikasi.
-- **Cakupan:** satu JSON, dua CSS, dan satu web manifest belum terwakili. Catatan rilis dalam korpus masih historis sampai 0.13.2.
-- **Performa:** hasil benchmark graf bersifat heuristik; angka penghematan token bukan pengukuran biaya atau ketepatan jawaban nyata.
-- **Publikasi:** artefak dipilih melalui allowlist. Path mesin dan alamat jaringan pribadi disamarkan. Credential, database pengguna, rekaman, model suara/LLM, log runtime, dan isi percakapan tidak disertakan.
+- [Struktur model](docs/avatar/r1/LEVA_MODEL_STRUCTURE_AUDIT.md)
+- [Scene lights dan batas material](docs/avatar/r1/LEVA_PREMIUM_SHADER_MATERIAL_REPORT.md)
+- [Kalibrasi ekspresi](docs/avatar/r1/LEVA_FACIAL_EXPRESSION_CALIBRATION.md)
+- [Suara dan animasi](docs/avatar/r1/LEVA_LIPSYNC_ANIMATION_REPORT.md)
+- [Rambut/pita/collision yang masih terbuka](docs/avatar/r1/LEVA_HAIR_RIBBON_PHYSICS_REPORT.md)
+- [Penilaian pengguna dan rencana versi](docs/avatar/r1/LEVA_PREMIUM_AVATAR_USER_REVIEW.md)
 
----
-
-<p align="center"><b>LEVA</b><br />Personal AI · Engineering notes · Dalam pengembangan</p>
+Leva adalah karakter dari Girls' Frontline 2; hak karakter/model milik pencipta dan pemegang hak terkait, termasuk MICA Team. Ini proyek asisten pribadi independen. Model karakter tidak didistribusikan di repo, dan script/renderer tidak memindahkan kepemilikan aset. Lisensi third-party renderer tercatat pada `app/leva_web/THIRD_PARTY_NOTICES.txt`.

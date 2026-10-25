@@ -1,5 +1,10 @@
 {
   "name": "Leva",
-  "version": "0.3.0",
-  "stage": "Desktop prototype: preferences, profile habits and Google Live Neural Voice"
+  "version": "0.40.0",
+  "data_root": "D:\\AI\\AI Lokal Asisten\\Leva",
+  "stage": "Candidate R1: calibrated natural motion/expression/audio-gated mouth, scene lighting and developer QA controls; source asset edits/colliders and 2D deferred.",
+  "web_ui_revision": "premium-avatar-r1-v040",
+  "verification_report": "docs/avatar/r1/LEVA_AVATAR_PERFORMANCE_QA.md",
+  "video_feature_audit": "VIDEO_FEATURE_AUDIT_20261023.md",
+  "rea_ui_plan": "VIDEO03_UI_UPDATE_PLAN.md"
 }

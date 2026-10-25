@@ -45,3 +45,14 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# Private avatar sources and runtime caches
+*.vrm
+*.pmx
+*.pmd
+*.fbx
+*.blend
+*.glb
+*.gltf
+**/graphify-out/cache/
+!docs/avatar/r1/media/r1-facial-transitions.mp4

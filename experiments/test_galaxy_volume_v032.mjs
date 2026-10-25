@@ -1,0 +1,13 @@
+import assert from'node:assert/strict';
+import{initialize,step}from'../app/leva_web/physics.js';
+import{rotatePoint}from'../app/leva_web/camera.js';
+const nodes=Array.from({length:150},(_,i)=>initialize({id:'node-'+i,category:'document'},i));
+const edges=nodes.slice(1).map((n,i)=>({source:nodes[i].id,target:n.id}));
+for(let i=0;i<120;i++)step(nodes,edges,.2);
+const spread=(values)=>Math.sqrt(values.reduce((a,v)=>a+v*v,0)/values.length);
+const dimensions=['x','y','z'].map(k=>spread(nodes.map(n=>n[k])));
+assert(Math.min(...dimensions)/Math.max(...dimensions)>.6,'graph collapsed along one axis');
+const area=yaw=>{const p=nodes.map(n=>rotatePoint(n.x,n.y,n.z,yaw,.1));return spread(p.map(n=>n.x))*spread(p.map(n=>n.y))};
+assert(area(Math.PI/2)/area(0)>.6,'side view is flat');
+const positions=nodes.map(n=>[n.x,n.y,n.z]);for(const n of nodes)rotatePoint(n.x,n.y,n.z,2,.6);assert.deepEqual(nodes.map(n=>[n.x,n.y,n.z]),positions);
+console.log(JSON.stringify({passed:3,axis_spread:dimensions,side_front_area_ratio:area(Math.PI/2)/area(0)}));

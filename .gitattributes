@@ -3,3 +3,6 @@
 *.md text eol=lf
 *.ps1 text eol=crlf
 docs/architecture/graphify-out/** text eol=lf
+
+# Preserve whitespace inside the bundled third-party shader strings.
+app/leva_web/avatar-vendor.js whitespace=-blank-at-eol,-space-before-tab

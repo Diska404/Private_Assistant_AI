@@ -53,9 +53,12 @@ class DesktopCommandTests(unittest.TestCase):
         self.assertEqual(self.desktop.handle("halo, apa kabar?", self.now)["kind"], "chat")
         self.browser.launch.assert_not_called()
 
-    def test_unsupported_operations_stay_local(self):
-        for text in ["buka Discord", "hapus semua file", "kirim email", "skip iklan"]:
-            self.assertEqual(self.desktop.handle(text, self.now)["kind"], "command")
+    def test_unknown_actions_route_to_planner_without_executing_them(self):
+        with patch('assistant_tools.AppCatalog.launch',return_value={'status':'done','reply':'Discord terdeteksi.'}) as launch:
+            self.assertEqual(self.desktop.handle('buka Discord',self.now)['kind'],'command')
+            launch.assert_called_once_with('discord')
+        for text in ["hapus semua file", "kirim email", "skip iklan"]:
+            self.assertTrue(self.desktop.handle(text,self.now)['needs_tools'])
         self.browser.launch.assert_not_called()
 
     def test_pause_blocks_commands_and_resume_does_not_launch(self):

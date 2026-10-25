@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import{QUALITY,quality,FixedPhysics,damp,MaterialLayer,expressionTargets}from'../app/leva_web/avatar_dynamics.js';
+import{VRMAvatarProvider}from'../app/leva_web/vrm_avatar.js';
+import{CompanionStage}from'../app/leva_web/avatar.js';
+assert.equal(Object.keys(QUALITY).length,4);assert.equal(quality('premium').fps,60);assert.equal(quality('eco').fps,15);
+assert.equal(quality('gaming').physicsHz,15);assert.equal(quality('balanced').physicsHz,30);
+const stepper=new FixedPhysics();let steps=0;for(let i=0;i<60;i++)stepper.update(1/60,15,()=>steps++);assert.equal(steps,15);
+assert(stepper.update(10,60,()=>{})<=4);stepper.reset();assert.equal(stepper.accumulator,0);
+assert(damp(0,1,.03)>0&&damp(0,1,.03)<1);assert.equal(expressionTargets('idle','confused').surprised,.2);
+const material={isMToonMaterial:true,name:'Face_SKIN',shadingToonyFactor:.5,shadingShiftFactor:.1,giEqualizationFactor:.2};
+const layer=new MaterialLayer([material]);layer.apply('soft_anime');assert.equal(material.shadingToonyFactor,.82);layer.restore();assert.equal(material.shadingShiftFactor,.1);assert.equal(material.giEqualizationFactor,.2);
+globalThis.cancelAnimationFrame=()=>{};
+const provider=new VRMAvatarProvider({});for(const key of Object.keys(QUALITY))provider.setQuality(key);
+assert.throws(()=>provider.setQuality('invented'),/invalid/);provider.setLighting('warm');provider.setMaterial('source');provider.setDebug(false);
+provider.vrm={meta:{modification:'prohibited'}};provider.canModify=false;assert.throws(()=>provider.setMaterial('soft_anime'),/Izin/);provider.vrm=null;provider.dispose();
+const stage=Object.create(CompanionStage.prototype);let trackStops=0,recordStops=0;stage.recording={save:true,timer:null,stream:{getTracks:()=>[{stop:()=>trackStops++}]},recorder:{state:'recording',stop:()=>recordStops++}};stage.cancelRecording();assert.equal(trackStops,1);assert.equal(recordStops,1);assert.equal(stage.recording.save,false);
+console.log(JSON.stringify({status:'passed',quality_profiles:4,physics_steps_at_15Hz:steps,asset_files_modified:false,physical_microphone_opened:false}));
