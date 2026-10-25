@@ -1,0 +1,11 @@
+import assert from'node:assert/strict';
+import{sourceExpressionName,SourceExpressionLayer}from'../app/leva_web/live2d_expression.js';
+import{localResource}from'../app/leva_web/live2d_avatar.js';
+assert.equal(sourceExpressionName('teasing'),'Smirk');assert.equal(sourceExpressionName('gentle'),'Tender');assert.equal(sourceExpressionName('unknown'),'Idle');
+const ids=new Map([['Param9',0],['ParamMouthForm',1]]),values=[0,.2],model={getParameterValueByIndex:i=>values[i],setParameterValueByIndex:(i,v)=>values[i]=v};
+const layer=new SourceExpressionLayer([{name:'Happy',parameters:[{Id:'Param9',Value:1,Blend:'Add'},{Id:'ParamMouthForm',Value:2,Blend:'Multiply'},{Id:'missing',Value:1,Blend:'Add'}]},{name:'Idle',parameters:[{Id:'Param9',Value:0,Blend:'Overwrite'}]}]);
+for(let i=0;i<120;i++){values[0]=0;values[1]=.2;layer.apply('happy',1/60,model,ids)}assert(Math.abs(values[0]-1)<1e-5);assert(Math.abs(values[1]-.4)<1e-5);assert.equal(layer.active,'Happy');
+for(let i=0;i<120;i++){values[0]=0;layer.apply('neutral',1/60,model,ids)}assert(values[0]<1e-5);layer.reset();assert.equal(layer.current.size,0);
+assert.throws(()=>new SourceExpressionLayer([{name:'Bad',parameters:[{Id:'X',Value:NaN,Blend:'Add'}]}]));
+assert.equal(localResource('expressions/EMO_Levva_Happy_01.exp3.json','leva_ssr'),'/api/live2d/models/leva_ssr/expressions/EMO_Levva_Happy_01.exp3.json');assert.throws(()=>localResource('file','unknown'));
+console.log('Source Live2D expression mapping, smoothing, reset and resource isolation passed.');

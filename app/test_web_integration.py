@@ -61,7 +61,7 @@ class BridgeTests(unittest.TestCase):
             with self.request('/api/commands','POST',payload) as response:self.assertEqual(response.status,202)
         self.assertEqual(self.bridge.commands.qsize(),1);self.bridge.reader.assert_not_called()
     def test_avatar_modules_are_served_by_actual_bridge(self):
-        for name in ('messages.js','trace.js','avatar.js','avatar.css','vrm_avatar.js','avatar_dynamics.js','avatar_performance.js','avatar_reactions.js','avatar_secondary.js','avatar_timing.js','vts_avatar.js','live2d_avatar.js','avatar-vendor.js','THIRD_PARTY_NOTICES.txt'):
+        for name in ('messages.js','trace.js','avatar.js','avatar.css','vrm_avatar.js','avatar_dynamics.js','avatar_performance.js','avatar_reactions.js','avatar_secondary.js','avatar_timing.js','vts_avatar.js','live2d_avatar.js','live2d_expression.js','live2d_framing.js','avatar-vendor.js','THIRD_PARTY_NOTICES.txt'):
             with self.request('/'+name) as response:
                 self.assertEqual(response.status,200);self.assertGreater(len(response.read()),100)
     def test_live2d_private_raw_json_and_no_arbitrary_files(self):

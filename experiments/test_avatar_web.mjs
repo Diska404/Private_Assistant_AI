@@ -29,3 +29,6 @@ const tap=voice.recordingTap();assert.equal(tapsConnected,1);assert.equal(tap.st
 assert.throws(()=>voice.recordingTap(),/already_active/);tap.close();tap.close();assert.equal(tapsStopped,1);assert.equal(tapsDisconnected,1);assert.equal(voice.recordTap,null);
 voice.enabled=false;assert.equal(voice.recordingTap(),null);
 console.log(JSON.stringify({audio_capture_checks:7,system_audio_or_microphone_captured:false}));
+const {OpaqueAvatarCapture}=await import('../app/leva_web/avatar.js');
+const paintCalls=[];document.createElement=()=>({getContext:(_type,options)=>{assert.equal(options.alpha,false);return {fillRect:()=>paintCalls.push('background'),drawImage:()=>paintCalls.push('avatar')}},captureStream:fps=>({fps})});
+const opaque=new OpaqueAvatarCapture({width:600,height:400},60);assert.deepEqual(paintCalls,['background','avatar']);assert.equal(opaque.stream.fps,60);opaque.close();opaque.close();assert.equal(rafs.size,0);

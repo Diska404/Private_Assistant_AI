@@ -43,9 +43,9 @@ class AvatarDirector:
 def enabled(preferences):return preferences.get('companion_enabled') is True
 
 def validate_settings(value):
-    if not isinstance(value,dict) or not value or set(value)-{'enabled','label','experimental_models','asset','renderer_gpu','renderer_backend','realtime_speech','native_stream'}:raise ValueError('invalid_companion_settings')
+    if not isinstance(value,dict) or not value or set(value)-{'enabled','label','experimental_models','asset','renderer_gpu','renderer_backend','live2d_asset','realtime_speech','native_stream'}:raise ValueError('invalid_companion_settings')
     from preferences import validate_setting
-    keys={'enabled':'companion_enabled','label':'companion_label','experimental_models':'experimental_models_enabled','asset':'companion_avatar_asset','renderer_gpu':'companion_renderer_gpu','renderer_backend':'companion_renderer_backend','realtime_speech':'realtime_speech','native_stream':'native_voice_stream'}
+    keys={'enabled':'companion_enabled','label':'companion_label','experimental_models':'experimental_models_enabled','asset':'companion_avatar_asset','renderer_gpu':'companion_renderer_gpu','renderer_backend':'companion_renderer_backend','live2d_asset':'companion_live2d_asset','realtime_speech':'realtime_speech','native_stream':'native_voice_stream'}
     for key,val in value.items():validate_setting(keys[key],val)
     if value.get('asset') not in (None,'placeholder'):__import__('avatar_assets').manifest(value['asset'])
     return dict(value)
@@ -55,7 +55,7 @@ def configure(main,value):
     if main.busy or getattr(main,'_translation_pending',False):raise ValueError('Tunggu jawaban selesai atau hentikan percakapan terlebih dahulu.')
     if any(k in value for k in ('realtime_speech','native_stream')):
         main.stop_reply_voice();main.cancel_inference()
-    keys={'enabled':'companion_enabled','label':'companion_label','experimental_models':'experimental_models_enabled','asset':'companion_avatar_asset','renderer_gpu':'companion_renderer_gpu','renderer_backend':'companion_renderer_backend','realtime_speech':'realtime_speech','native_stream':'native_voice_stream'}
+    keys={'enabled':'companion_enabled','label':'companion_label','experimental_models':'experimental_models_enabled','asset':'companion_avatar_asset','renderer_gpu':'companion_renderer_gpu','renderer_backend':'companion_renderer_backend','live2d_asset':'companion_live2d_asset','realtime_speech':'realtime_speech','native_stream':'native_voice_stream'}
     main.preferences.set_many({keys[k]:v for k,v in value.items()})
     frame=getattr(main,'room_frames',{}).get(ROOM)
     if frame:
@@ -108,6 +108,6 @@ def presentation(main,phase,output_level):
         'mic_authorized':getattr(main,'companion_mic_consent',False) is True,'tools':'none',
         'history':'session_only','cloud':'disabled','asset':main.preferences.get('companion_avatar_asset'),
         'asset_choices':__import__('avatar_assets').choices(),'renderer_gpu':main.preferences.get('companion_renderer_gpu'),
-        'renderer_backend':main.preferences.get('companion_renderer_backend') or 'vrm',
+        'renderer_backend':main.preferences.get('companion_renderer_backend') or 'vrm','live2d_asset':main.preferences.get('companion_live2d_asset') or 'hiyori','live2d_choices':__import__('live2d_assets').choices(),
         'realtime_speech':main.preferences.get('realtime_speech'),'native_stream':main.preferences.get('native_voice_stream'),
-        'providers':{'placeholder':'available','vrm':'available','vts':'optional_external_requires_auth','live2d_native':'core_and_model_not_configured'}}
+        'providers':{'placeholder':'available','vrm':'available','vts':'optional_external_requires_auth','live2d_native':'optional_private_runtime'}}

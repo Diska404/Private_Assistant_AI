@@ -1,0 +1,202 @@
+{
+  "version": "0.42.0",
+  "date": "2026-10-26",
+  "status": "candidate_initial_live2d_rig_not_full_premium_avatar",
+  "original_live2d_files_unchanged": 19,
+  "original_vrm_sha256_unchanged": true,
+  "generated_artwork": false,
+  "aom_reopen_verified": true,
+  "cmo3_export_verified": false,
+  "cmo3_blocker": "Ayatsuri strict validation: selectedCubismPhysics null instead of CPhysicsSettingsGuid",
+  "moc3_5_export_and_native_runtime_verified": true,
+  "source_rig": {
+    "parameters": 32,
+    "deformers": 52,
+    "meshes": 35,
+    "expressions": 12,
+    "physics": false
+  },
+  "derived_rig": {
+    "parameters": 34,
+    "deformers": 54,
+    "meshes": 35,
+    "head_tilt_max_degrees": 4,
+    "head_yaw": false,
+    "fringe_physics_particles": 2,
+    "full_hair_or_clothing_physics": false
+  },
+  "regressions": {
+    "tests": 622,
+    "seconds": 42.94,
+    "failures": [],
+    "errors": [],
+    "skipped": [
+      {
+        "test": "test_image_tensor_io (unittest.loader.ModuleSkipped.test_image_tensor_io)",
+        "reason": "Run image tensor tests using either installed image engine Python."
+      }
+    ],
+    "production_data_access": "DATA redirected before imports; real preferences/conversations not loaded",
+    "successful": true
+  },
+  "javascript": {
+    "scripts": 17,
+    "passed": 17
+  },
+  "packaged": {
+    "passed": 104,
+    "sha256": "b0d1f2960fa28f9726f48ed2db381105cd78328c45b8bb7a1ede891241bfb6dc",
+    "normal_app_started": false,
+    "production_preferences_changed": false,
+    "real_audio_inference": false
+  },
+  "source_renderer": {
+    "version": "0.42.0",
+    "asset": "leva_ssr",
+    "samples": 240,
+    "target_fps": 60,
+    "observed_fps": 60.001498069018794,
+    "frame_p50_ms": 16.700000762939453,
+    "frame_p95_ms": 16.700000762939453,
+    "frame_p99_ms": 16.799999237060547,
+    "draw_ms": 1.907916659116745,
+    "draw_p95_ms": 2.299999952316284,
+    "render_cpu_p95_ms": 2,
+    "physics_ms": 0.0029166667101283867,
+    "physics_p95_ms": 0,
+    "jitter_ms": 0.0576131302099556,
+    "frame_budget_ms": 16.666666666666668,
+    "long_frame_threshold_ms": 25,
+    "long_frame_count": 0,
+    "over_budget_frames": 0,
+    "estimated_missed_target_slots": 0,
+    "simulation_steps": 0,
+    "simulation_resets": 0,
+    "backend": "native_cubism",
+    "model": "Leva GFL2 SSR · Live2D cerita · rig terbatas",
+    "model_is_leva": true,
+    "source_expression": "Tender",
+    "head_turn_supported": false,
+    "physics_present": false,
+    "parameter_count": 32,
+    "drawable_count": 35,
+    "mesh_bounds": {
+      "minX": -0.5302499923670254,
+      "maxX": 0.49849999597100236,
+      "minY": -0.9277499601627426,
+      "maxY": 0.5390000025086081
+    },
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 (0x00002F04) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "gpu_verified": false,
+    "requested_fps": 60,
+    "adaptive_fallback": false,
+    "render_width": 1232,
+    "render_height": 432,
+    "physics_hz": 0,
+    "parameters": {
+      "ParamEyeROpen": 0.968999981880188,
+      "ParamMouthOpenY": 0,
+      "ParamMouthForm": -0.20000000298023224,
+      "Param9": 0,
+      "Param10": 0,
+      "Param12": 0,
+      "ParamCheek": 0
+    }
+  },
+  "final_registered_rig_renderer": {
+    "version": "0.42.0",
+    "asset": "leva_rig_r02",
+    "samples": 240,
+    "target_fps": 60,
+    "observed_fps": 59.29732532915885,
+    "frame_p50_ms": 18.100000381469727,
+    "frame_p95_ms": 18.299999237060547,
+    "frame_p99_ms": 24.200000762939453,
+    "draw_ms": 4.830000015596549,
+    "draw_p95_ms": 11.800000190734863,
+    "render_cpu_p95_ms": 11.199999809265137,
+    "physics_ms": 0.03999999941637119,
+    "physics_p95_ms": 0.10000000149011612,
+    "jitter_ms": 4.000922824163798,
+    "frame_budget_ms": 16.666666666666668,
+    "long_frame_threshold_ms": 25,
+    "long_frame_count": 2,
+    "over_budget_frames": 2,
+    "estimated_missed_target_slots": 3,
+    "simulation_steps": 860,
+    "simulation_resets": 0,
+    "backend": "native_cubism",
+    "model": "Leva SSR · initial head tilt & fringe QA",
+    "model_is_leva": true,
+    "source_expression": "Tender",
+    "head_turn_supported": false,
+    "head_tilt_supported": true,
+    "physics_present": true,
+    "parameter_count": 34,
+    "drawable_count": 35,
+    "mesh_bounds": {
+      "minX": -0.5302500489318334,
+      "maxX": 0.4985000525358103,
+      "minY": -0.9277499601627426,
+      "maxY": 0.5390000590734161
+    },
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 (0x00002F04) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "gpu_verified": false,
+    "requested_fps": 60,
+    "adaptive_fallback": false,
+    "render_width": 1745,
+    "render_height": 727,
+    "physics_hz": 60,
+    "parameters": {
+      "ParamAngleZ": 3.055161714553833,
+      "ParamHairFront": 0.0036240010522305965,
+      "ParamEyeROpen": 0.968999981880188,
+      "ParamMouthOpenY": 0,
+      "ParamMouthForm": -0.20000000298023224,
+      "Param9": 0,
+      "Param10": 6.393818689772042e-18,
+      "Param12": 0,
+      "ParamCheek": 0
+    }
+  },
+  "final_media": {
+    "duration": "12.001000",
+    "streams": [
+      {
+        "codec": "h264",
+        "type": "video",
+        "fps": "3465/128",
+        "width": 1746,
+        "height": 728
+      },
+      {
+        "codec": "aac",
+        "type": "audio",
+        "fps": "0/0",
+        "width": null,
+        "height": null
+      }
+    ],
+    "source": "Preexisting Japanese Leva A wav; no new TTS inference or microphone capture",
+    "qa_expressions_and_head_tilt": true,
+    "background": "opaque recording compositor",
+    "manual_stop_interrupted_state_observed": true,
+    "mouth_zero_after_settled_stop": true,
+    "automatic_asr_barge_in_tested": false
+  },
+  "voice": "preexisting Japanese Leva A playback; not a new TTS/ASR benchmark",
+  "automatic_asr_barge_in_verified": false,
+  "android_physical_verified": false,
+  "vts_new_model_verified": false,
+  "production_promoted": false,
+  "gpu_renderer_observed": "RTX 5070",
+  "rtx4050_renderer_verified": false,
+  "120fps_rig_certified": false,
+  "private_assets_in_public_repository": false,
+  "sanitized_export": {
+    "python_tests": 622,
+    "python_successful": true,
+    "python_skipped": 1,
+    "javascript_passed": 17
+  }
+}

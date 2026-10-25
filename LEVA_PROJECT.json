@@ -1,10 +1,10 @@
 {
   "name": "Leva",
-  "version": "0.41.0",
+  "version": "0.42.0",
   "data_root": "D:\\AI\\AI Lokal Asisten\\Leva",
-  "stage": "Candidate R2 + Live2D R0: render 120 FPS target / independent solver; bounded reactions and permission-gated physics; native Cubism official sample and optional local VTS bridge. Leva 2D artwork/rig pending; restricted VRM unchanged.",
-  "web_ui_revision": "premium-avatar-r2-v041",
-  "verification_report": "docs/avatar/r2/LEVA_PREMIUM_AVATAR_R2_REPORT.md",
+  "stage": "Candidate Live2D R0.1: actual Leva SSR source plus optional editable initial tilt/fringe rig; not a full VTuber rig. R2 3D and original assets preserved. No image generation.",
+  "web_ui_revision": "leva-live2d-r01-v042",
+  "verification_report": "docs/avatar/live2d-r01/REPORT.md",
   "video_feature_audit": "VIDEO_FEATURE_AUDIT_20261023.md",
   "rea_ui_plan": "VIDEO03_UI_UPDATE_PLAN.md"
 }

@@ -3,23 +3,26 @@ import copy,json,queue,sys,time
 from pathlib import Path
 from unittest.mock import Mock
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT/'app'),str(ROOT/'experiments')]
-OUT=Path(r'D:\AI\AI Lokal Asisten\Leva\verification\leva-premium-avatar-r2');OUT.mkdir(exist_ok=True)
+OUT=Path(sys.argv[sys.argv.index('--out')+1]) if '--out' in sys.argv else Path(r'D:\AI\AI Lokal Asisten\Leva\verification\leva-premium-avatar-r2');OUT.mkdir(parents=True,exist_ok=True)
 import paths
 paths.DATA=OUT/'fixture-data';paths.DATA.mkdir(exist_ok=True)
-import avatar_assets
+import avatar_assets,live2d_assets
+live2d_assets.MODELS=Path(r'D:\AI\AI Lokal Asisten\Leva\avatar-assets\live2d')
 avatar_assets.FOLDER=Path(r'D:\AI\AI Lokal Asisten\Leva\avatar-assets')
 from web_bridge import WebBridge
 from web_store import WebStore
 from preview_companion_fixture import state as template
 state=copy.deepcopy(template);state['avatar'].update(asset='leva_original',renderer_gpu='rtx4050',asset_choices=avatar_assets.choices(),realtime_speech=False,native_stream=False,reaction='greeting',reaction_id=1)
 state['rooms']={room:{'model':'fixture','gpu':'fixture','models':{'fixture':'Preview tanpa inferensi'},'gpus':{'fixture':'Tidak memuat LLM'}} for room in ('assistant','chat','secret','companion_avatar')}
-if '--native' in sys.argv:state['avatar']['renderer_backend']='live2d'
+state['avatar'].update(live2d_asset='leva_rig_r02' if '--initial-rig' in sys.argv else 'leva_ssr' if '--leva' in sys.argv else 'hiyori',live2d_choices=live2d_assets.choices())
+if '--native' in sys.argv or '--leva' in sys.argv:state['avatar']['renderer_backend']='live2d'
 def preview_activity():
- label='Hiyori sampel SDK · bukan Leva' if state['avatar'].get('renderer_backend')=='live2d' else state['avatar'].get('asset_choices',{}).get(state['avatar']['asset'],'Avatar preview')
+ label=state['avatar']['live2d_choices'].get(state['avatar'].get('live2d_asset'),'Live2D lokal') if state['avatar'].get('renderer_backend')=='live2d' else state['avatar'].get('asset_choices',{}).get(state['avatar']['asset'],'Avatar preview')
  return 'R2 PREVIEW · '+label+' · tidak memuat LLM/mikrofon'
 state['activity']=preview_activity()
 reader=Mock();reader.graph.return_value={'nodes':[],'edges':[]}
-bridge=WebBridge(reader,port=20291,store=WebStore(paths.DATA/'web.sqlite3'))
+preview_port=int(sys.argv[sys.argv.index('--port')+1]) if '--port' in sys.argv else 20291
+bridge=WebBridge(reader,port=preview_port,store=WebStore(paths.DATA/'web.sqlite3'))
 bridge.update(state);bridge.log('Leva · Preview','Preview avatar lokal untuk penilaian visual. Sampel SDK/pixiv tetap diberi identitas sumbernya; bukan karakter Leva final.')
 state['avatar']['expression']='soft_smile';bridge.update(state);
 url=bridge.start();(OUT/'fixture-url.txt').write_text(url,encoding='utf8')
@@ -41,6 +44,7 @@ try:
    if value.get('asset') in avatar_assets.choices():state['avatar']['asset']=value['asset']
    state['avatar']['enabled']=value.get('enabled',True)
    if value.get('renderer_backend') in ('vrm','vts','live2d'):state['avatar']['renderer_backend']=value['renderer_backend']
+   if value.get('live2d_asset') in live2d_assets.choices():state['avatar']['live2d_asset']=value['live2d_asset']
   elif kind=='test_audio' and clip.is_file():
    bridge.publish_audio(clip,{'fixture':True,'pack':'higgs_leva','language':'ja'});state['avatar']['state']='speaking';audio_until=time.monotonic()+28.3
   elif kind in ('stop_voice','companion_stop'):

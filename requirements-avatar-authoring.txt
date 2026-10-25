@@ -1,0 +1,2 @@
+# Optional offline AOM authoring, not required by the application
+msgpack==1.1.2

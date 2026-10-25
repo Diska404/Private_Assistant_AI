@@ -21,7 +21,7 @@ DEFAULTS = {"provider": MODES[0], "dual_gpu": False, "learn_habits": True,
             'companion_idle':True,'companion_playful':True,'companion_idle_delay':'120','show_japanese':False,
             'companion_enabled':False,'companion_label':'Leva ♡','companion_avatar_model':'qwen4b','companion_avatar_gpu':'gpu5070','experimental_models_enabled':False,
             'streaming_text':True,'realtime_speech':False,'native_voice_stream':False,
-            'companion_avatar_asset':'placeholder','companion_renderer_gpu':'rtx4050','companion_renderer_backend':'vrm',
+            'companion_avatar_asset':'placeholder','companion_renderer_gpu':'rtx4050','companion_renderer_backend':'vrm','companion_live2d_asset':'hiyori',
             'chat_model':'auto','chat_gpu':'gpu5070','secret_model':'qwen4b','secret_gpu':'gpu5070',
             'agent_local_model':'saluki','agent_provider':'RTX 5070','agent_gpu':'auto','separate_agent':True,'route_single_gpu':'rtx4050','obsidian_vault':'','web_port':'8769','web_remote_origin':'','web_remote_enabled':False}
 
@@ -35,6 +35,7 @@ def validate_setting(key, value):
         valid = value in SINGLE_CHOICES+DUAL_CHOICES or value in LEGACY
     elif key=='companion_avatar_asset':valid=value in ('placeholder','pixiv_sample','pixiv_polished','custom','leva_original')
     elif key=='companion_renderer_gpu':valid=value in ('rtx4050','rtx5070')
+    elif key=='companion_live2d_asset':valid=value in ('hiyori','leva_ssr','leva_rig_r02')
     elif key=='companion_renderer_backend':valid=value in ('vrm','vts','live2d')
     elif key == "voice":
         valid = value in VOICES

@@ -63,3 +63,8 @@ venv/
 *.cmo3
 *.psd
 *.dpapi
+
+# Private editable avatar projects
+*.aom
+*.aodx
+*.aprj
