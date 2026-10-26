@@ -32,3 +32,5 @@ console.log(JSON.stringify({audio_capture_checks:7,system_audio_or_microphone_ca
 const {OpaqueAvatarCapture}=await import('../app/leva_web/avatar.js');
 const paintCalls=[];document.createElement=()=>({getContext:(_type,options)=>{assert.equal(options.alpha,false);return {fillRect:()=>paintCalls.push('background'),drawImage:()=>paintCalls.push('avatar')}},captureStream:fps=>({fps})});
 const opaque=new OpaqueAvatarCapture({width:600,height:400},60);assert.deepEqual(paintCalls,['background','avatar']);assert.equal(opaque.stream.fps,60);opaque.close();opaque.close();assert.equal(rafs.size,0);
+const frameEvents=new Map(),eventSource={width:600,height:400,dataset:{live2dLoad:'ready'},addEventListener:(k,v)=>frameEvents.set(k,v),removeEventListener:(k,v)=>{assert.equal(frameEvents.get(k),v);frameEvents.delete(k)}};
+const synced=new OpaqueAvatarCapture(eventSource,30);assert.equal(rafs.size,0);const before=paintCalls.length;frameEvents.get('leva-avatar-frame')();assert.equal(paintCalls.length,before+2);synced.close();assert.equal(frameEvents.size,0);

@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/assets/leva-banner.svg" alt="LEVA — personal AI assistant, 0.42.0 Leva Live2D editable candidate" width="1200" /></p>
+<p align="center"><img src="docs/assets/leva-banner.svg" alt="LEVA — personal AI assistant, 0.43.0 Leva Live2D advanced rig candidate" width="1200" /></p>
 
 <p align="center"><b>Desktop · Web · Android interface · Modular voice · Agent tools · Avatar laboratory</b></p>
 
@@ -6,11 +6,23 @@
 
 Asisten AI pribadi untuk Windows yang menghubungkan percakapan, suara, pengetahuan dan alat pekerjaan pada laptop. Desktop dan web memakai layanan pelaksana yang sama; HP menjadi antarmuka pribadi bagi laptop.
 
-> **Source snapshot 0.42.0 · 26 Oktober 2026.** Kandidat Leva Live2D R0.1 editabel dan rig awal; 3D R2 dipertahankan. Model AI, aset karakter, SDK Live2D, voice pack, credential dan data pengguna tidak disertakan. Avatar premium final dan kendali universal seluruh aplikasi belum diklaim selesai.
+> **Source snapshot 0.43.0 · 26 Oktober 2026.** Kandidat Leva Live2D R03 dengan parallax, napas dan fisika turunan; 3D R2 dipertahankan. Model AI, aset karakter, SDK Live2D, voice pack, credential dan data pengguna tidak disertakan. Avatar premium final dan kendali universal seluruh aplikasi belum diklaim selesai.
 
 <table><tr><td width="33%" valign="top"><h3>Percakapan</h3><p>Ruang Asisten, Chat, Secret ♡ dan Leva ♡ dengan konteks serta model sesuai tujuan. ASR, LLM dan TTS merupakan tahap terpisah.</p></td><td width="33%" valign="top"><h3>Pekerjaan</h3><p>Alat aplikasi/browser, terminal, patch, pencarian berkas, progres dan jurnal tugas. Hasil alat perlu diverifikasi; cakupannya tidak menjamin semua canvas atau game.</p></td><td width="33%" valign="top"><h3>Karakter</h3><p>Renderer VRM, controller reaksi/ekspresi, serta backend Live2D native dan VTube Studio opsional. Pemisahan renderer, state dan suara menjaga fleksibilitas.</p></td></tr></table>
 
-## Perkembangan terbaru — Leva Live2D editabel 0.42.0
+## Perkembangan terbaru — Rig Live2D lanjutan 0.43.0
+
+Fork R03 menambah **44 parameter, 59 deformer dan 46 mesh**. Kepala X/Y memakai parallax terbatas, badan memiliki sway/lean dan napas, serta empat kelompok solver menggerakkan poni, rambut belakang/samping dan jaket. **Mata kiri rekonstruksi opsional** berasal dari mata kanan yang ada; pose wink asli tetap bawaan. Tidak menggunakan image generation.
+
+- Uji nyata Core: **54 pose**, semua kontrol bergerak, posisi netral tetap dalam 8,94e-8 unit dari R02.
+- Uji renderer 12 detik: **719 frame simulasi**; kedipan kedua mata, sumber ekspresi, gerak badan dan fisika terukur.
+- Window 240 sampel: **60,02 FPS**, p95 18,30 ms, physics p95 0,10 ms pada 1076×583. GPU aktual RTX 5070; permintaan RTX 4050 masih dilaporkan tidak cocok.
+- **622 tes Python**, satu skip engine gambar; **18 skrip JS**, **104 pemeriksaan paket**. Rekaman native disinkronkan setelah render untuk mencegah frame kosong.
+- Batas: belum perspektif yaw, lengan independen atau cloth collision. AOM editabel dan MOC3 5.0 diuji; CMO3 tetap eksperimental. Aset, SDK dan rekaman privat tidak disertakan.
+
+[Laporan](docs/avatar/live2d-r03/REPORT.md) · [Pemakaian](docs/avatar/live2d-r03/RUNBOOK.md) · [Graf modul](docs/avatar/live2d-r03/MODULE_MAP.md) · [Data validasi](docs/avatar/live2d-r03/verification-summary.json)
+
+## Riwayat 0.42.0 — Leva Live2D editabel
 
 Leva GFL2 SSR Live2D nyata sudah dirender melalui SDK lokal, disimpan dan dibuka kembali sebagai AOM editabel, lalu diekspor ulang ke MOC3 5.0. Fork privat menambah kemiringan kepala kecil dan fisika poni. **Ini rig awal, belum avatar premium lengkap sekelas AAA.** Tidak memakai image generation; atlas dan model sumber tetap utuh.
 

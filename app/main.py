@@ -362,7 +362,7 @@ def main():
             from avatar_emotion import expression_for_reply
             results['avatar_context_calibration_packaged']=expression_for_reply('Permintaan belum berhasil.')=='thinking'
             results['avatar_performance_module_packaged']=(ASSETS/'avatar_performance.js').is_file()
-            results['avatar_r2_modules_packaged']=all((ASSETS/name).is_file() for name in ('avatar_reactions.js','avatar_secondary.js','avatar_timing.js','vts_avatar.js','live2d_avatar.js','live2d_expression.js','live2d_framing.js'))
+            results['avatar_r2_modules_packaged']=all((ASSETS/name).is_file() for name in ('avatar_reactions.js','avatar_secondary.js','avatar_timing.js','vts_avatar.js','live2d_avatar.js','live2d_expression.js','live2d_framing.js','live2d_rig_controls.js'))
             from live2d_assets import status as live2d_status
             from vts_bridge import validate_frame
             results['optional_live2d_backend_packaged']=isinstance(live2d_status()['available'],bool) and validate_frame({})['mouth']==0

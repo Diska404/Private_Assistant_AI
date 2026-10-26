@@ -14,7 +14,7 @@ from web_store import WebStore
 from preview_companion_fixture import state as template
 state=copy.deepcopy(template);state['avatar'].update(asset='leva_original',renderer_gpu='rtx4050',asset_choices=avatar_assets.choices(),realtime_speech=False,native_stream=False,reaction='greeting',reaction_id=1)
 state['rooms']={room:{'model':'fixture','gpu':'fixture','models':{'fixture':'Preview tanpa inferensi'},'gpus':{'fixture':'Tidak memuat LLM'}} for room in ('assistant','chat','secret','companion_avatar')}
-state['avatar'].update(live2d_asset='leva_rig_r02' if '--initial-rig' in sys.argv else 'leva_ssr' if '--leva' in sys.argv else 'hiyori',live2d_choices=live2d_assets.choices())
+state['avatar'].update(live2d_asset='leva_rig_r03' if '--advanced-rig' in sys.argv else 'leva_rig_r02' if '--initial-rig' in sys.argv else 'leva_ssr' if '--leva' in sys.argv else 'hiyori',live2d_choices=live2d_assets.choices())
 if '--native' in sys.argv or '--leva' in sys.argv:state['avatar']['renderer_backend']='live2d'
 def preview_activity():
  label=state['avatar']['live2d_choices'].get(state['avatar'].get('live2d_asset'),'Live2D lokal') if state['avatar'].get('renderer_backend')=='live2d' else state['avatar'].get('asset_choices',{}).get(state['avatar']['asset'],'Avatar preview')

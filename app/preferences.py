@@ -35,7 +35,7 @@ def validate_setting(key, value):
         valid = value in SINGLE_CHOICES+DUAL_CHOICES or value in LEGACY
     elif key=='companion_avatar_asset':valid=value in ('placeholder','pixiv_sample','pixiv_polished','custom','leva_original')
     elif key=='companion_renderer_gpu':valid=value in ('rtx4050','rtx5070')
-    elif key=='companion_live2d_asset':valid=value in ('hiyori','leva_ssr','leva_rig_r02')
+    elif key=='companion_live2d_asset':valid=value in ('hiyori','leva_ssr','leva_rig_r02','leva_rig_r03')
     elif key=='companion_renderer_backend':valid=value in ('vrm','vts','live2d')
     elif key == "voice":
         valid = value in VOICES

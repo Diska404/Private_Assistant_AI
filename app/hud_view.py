@@ -545,7 +545,7 @@ class WorkspaceHUD:
         badge=' · HP' if getattr(m,'remote_control_active',False) else ' · Web' if clients else ''
         if getattr(m,'remote_control_active',False) and not reply_active and not active:
             self.live_text.configure(text='HP tersambung · mic laptop dijeda\nMic HP hanya saat tombol ditahan · transkrip diperiksa sebelum dikirim')
-        self.clock.configure(text=datetime.now(WIB).strftime("%H:%M  WIB") + "  ·  v0.42.0"+badge)
+        self.clock.configure(text=datetime.now(WIB).strftime("%H:%M  WIB") + "  ·  v0.43.0"+badge)
         if time.monotonic()-self.metrics_at>2:
             data=getattr(m,'hardware',None)
             value=data.value if data else {}

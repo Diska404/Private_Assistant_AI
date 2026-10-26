@@ -7,7 +7,8 @@ ROOT=Path(r'D:\AI\AI Lokal Asisten\Github\Live2D-SDK')
 MODELS=DATA/'avatar-assets/live2d'
 LOCAL_MODELS=Path(r'D:\AI\AI Lokal Asisten\Model Avatar Leva\Live2D')
 CHARACTERS={'leva_ssr':('leva-ssr-manifest.json','CHA_Levva_SSR_01'),
-            'leva_rig_r02':('leva-rig-r02-manifest.json','Leva_Editable_R01/runtime_initial_rig_r02c')}
+            'leva_rig_r02':('leva-rig-r02-manifest.json','Leva_Editable_R01/runtime_initial_rig_r02c'),
+            'leva_rig_r03':('leva-rig-r03-manifest.json','Leva_Advanced_R03/runtime')}
 
 def character_manifest(key):
     if key not in CHARACTERS:raise ValueError('unknown_live2d_model')
@@ -55,7 +56,9 @@ def status():
         for key in CHARACTERS:
             try:
                 character,root=character_manifest(key)
-                if all((root/item['path']).is_file() for item in character['files'].values()):models[key]={k:character[k] for k in ('label','index','model_is_leva','kind')}
+                if all((root/item['path']).is_file() for item in character['files'].values()):
+                    models[key]={k:character[k] for k in ('label','index','model_is_leva','kind')}
+                    models[key]['rig_capabilities']=character.get('rig_capabilities',{})
             except (ValueError,OSError,KeyError):pass
         return {'available':True,'sdk_version':row['sdk_version'],'model':row['model'],'model_is_leva':False,'native_web_renderer':True,'models':models}
     except (ValueError,OSError,KeyError):return {'available':False,'model_is_leva':False,'native_web_renderer':True}

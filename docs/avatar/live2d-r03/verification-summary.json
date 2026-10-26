@@ -1,0 +1,140 @@
+{
+  "version": "0.43.0",
+  "status": "verified_local_candidate",
+  "date": "2026-10-26",
+  "geometry": {
+    "status": "passed",
+    "parameters": 44,
+    "drawables": 46,
+    "neutral_max_delta": 8.940696716308594e-08,
+    "poses_checked": 54,
+    "active_controls": [
+      {
+        "id": "ParamAngleX",
+        "max_vertex_displacement": 0.03090578317642212
+      },
+      {
+        "id": "ParamAngleY",
+        "max_vertex_displacement": 0.013860076665878296
+      },
+      {
+        "id": "ParamBodyAngleX",
+        "max_vertex_displacement": 0.014797627925872803
+      },
+      {
+        "id": "ParamBodyAngleZ",
+        "max_vertex_displacement": 0.01566368341445923
+      },
+      {
+        "id": "ParamBreath",
+        "max_vertex_displacement": 0.004000067710876465
+      },
+      {
+        "id": "ParamHairFront",
+        "max_vertex_displacement": 0.008000016212463379
+      },
+      {
+        "id": "ParamHairBack",
+        "max_vertex_displacement": 0.009000122547149658
+      },
+      {
+        "id": "ParamHairSide",
+        "max_vertex_displacement": 0.006000041961669922
+      },
+      {
+        "id": "ParamJacketSway",
+        "max_vertex_displacement": 0.005000069737434387
+      }
+    ],
+    "left_eye_opt_in": true,
+    "head_motion": "limited_2_5d_parallax",
+    "full_perspective_yaw": false
+  },
+  "renderer": {
+    "samples": 240,
+    "observed_fps": 60.01650308454883,
+    "frame_p95_ms": 18.299999237060547,
+    "frame_p99_ms": 18.299999237060547,
+    "physics_p95_ms": 0.10000000149011612,
+    "long_frame_count": 0,
+    "render_width": 1076,
+    "render_height": 583,
+    "physics_hz": 60,
+    "rig_test": {
+      "samples": 719,
+      "ranges": {
+        "ParamAngleX": {
+          "min": -29.99999237060547,
+          "max": 29.999963760375977
+        },
+        "ParamAngleY": {
+          "min": -23.999998092651367,
+          "max": 23.999996185302734
+        },
+        "ParamAngleZ": {
+          "min": -29.99999237060547,
+          "max": 29.999963760375977
+        },
+        "ParamBodyAngleX": {
+          "min": -7.999980449676514,
+          "max": 8
+        },
+        "ParamBodyAngleZ": {
+          "min": -7.999998569488525,
+          "max": 7.999999523162842
+        },
+        "ParamBreath": {
+          "min": 1.8169971554016229e-06,
+          "max": 0.999985933303833
+        },
+        "ParamHairFront": {
+          "min": -1,
+          "max": 1
+        },
+        "ParamHairBack": {
+          "min": -0.7994584441184998,
+          "max": 0.7861606478691101
+        },
+        "ParamHairSide": {
+          "min": -1,
+          "max": 0.9894245266914368
+        },
+        "ParamJacketSway": {
+          "min": -0.07591553777456284,
+          "max": 0.18105721473693848
+        },
+        "ParamEyeLOpen": {
+          "min": 0,
+          "max": 1
+        },
+        "ParamEyeROpen": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "finite": true
+    }
+  },
+  "actual_gpu": "RTX 5070 (ANGLE Direct3D11)",
+  "requested_gpu": "RTX 4050; mismatch reported honestly",
+  "audio": "Existing Japanese Leva A WAV playback; lip motion and manual Stop observed. No new inference/ASR/echo test.",
+  "freeze_verified": true,
+  "regressions": {
+    "python": 622,
+    "skipped": 1,
+    "javascript_scripts": 18,
+    "packaged": 104
+  },
+  "package_sha256": "fbfb571717a56d72b4904f251be34f207ef27fb0774a09f8a27e42bd217e4016",
+  "source_artwork_unchanged": true,
+  "image_generation": false,
+  "production_preferences_changed": false,
+  "limitations": [
+    "Limited 2.5D head parallax, not perspective yaw",
+    "Left eye is optional mirrored right-eye reconstruction, not original illustration",
+    "Single base sprite limits independent arms, clothing and back hair",
+    "Bone/warp secondary motion has no cloth collision",
+    "CMO3 writer remains experimental; editable AOM and MOC3 5.0 tested",
+    "No 120 FPS hardware claim"
+  ]
+}
