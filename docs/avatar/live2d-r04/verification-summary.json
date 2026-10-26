@@ -1,0 +1,110 @@
+{
+  "version": "0.44.0",
+  "phase": "R04-A structure and developer QA checkpoint",
+  "full_R04_complete": false,
+  "full_R05_complete": false,
+  "geometry": {
+    "status": "passed",
+    "parameters": 44,
+    "drawables": 57,
+    "separated_base_parts": 12,
+    "combined_poses": 54,
+    "untouched_face_max_vertex_delta": 0,
+    "independent_arm_controls": false,
+    "full_body": false
+  },
+  "roundtrip": {
+    "source_aom_saved_and_reopened": true,
+    "moc3_export_identical_after_roundtrip": true,
+    "saved_aom_sha256": "dba38a054b6010148dc2c5febd54c5d1319737a4d767cbb6388aa9ba8b125e77"
+  },
+  "renderer": {
+    "asset": "leva_artwork_r04a",
+    "samples": 240,
+    "observed_fps": 60.01650294141898,
+    "frame_p50_ms": 18.200000762939453,
+    "frame_p95_ms": 18.299999237060547,
+    "frame_p99_ms": 18.299999237060547,
+    "physics_p95_ms": 0.10000000149011612,
+    "long_frame_count": 0,
+    "render_width": 1076,
+    "render_height": 583,
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 (0x00002F04) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "rig_test": {
+      "samples": 720,
+      "ranges": {
+        "ParamAngleX": {
+          "min": -29.99994659423828,
+          "max": 29.999889373779297
+        },
+        "ParamAngleY": {
+          "min": -23.99999237060547,
+          "max": 24
+        },
+        "ParamAngleZ": {
+          "min": -29.99994659423828,
+          "max": 29.999889373779297
+        },
+        "ParamBodyAngleX": {
+          "min": -7.999999046325684,
+          "max": 7.999999523162842
+        },
+        "ParamBodyAngleZ": {
+          "min": -8,
+          "max": 7.999996662139893
+        },
+        "ParamBreath": {
+          "min": 1.3431975276034791e-05,
+          "max": 0.9999976754188538
+        },
+        "ParamHairFront": {
+          "min": -1,
+          "max": 1
+        },
+        "ParamHairBack": {
+          "min": -0.7995374798774719,
+          "max": 0.7382205724716187
+        },
+        "ParamHairSide": {
+          "min": -1,
+          "max": 1
+        },
+        "ParamJacketSway": {
+          "min": -0.808812141418457,
+          "max": 0.10088792443275452
+        },
+        "ParamEyeLOpen": {
+          "min": 0,
+          "max": 0
+        },
+        "ParamEyeROpen": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "finite": true
+    }
+  },
+  "tests": {
+    "python": 622,
+    "python_optional_skip": 1,
+    "javascript_scripts": 19,
+    "frozen_checks": 104
+  },
+  "artwork": {
+    "layer_composite_exact": true,
+    "original_atlas_unchanged": true,
+    "visible_layers": 12,
+    "new_drawn_hidden_surfaces": 0,
+    "premium_repainting": false,
+    "generative_images": false
+  },
+  "audio": {
+    "existing_sample_playback_observed": true,
+    "manual_stop_observed": true,
+    "first_recording_empty": true,
+    "retry_after_actual_playback_started": "valid WebM + AAC/H264 MP4, nonzero audio",
+    "new_TTS_ASR_benchmark": false
+  },
+  "production_preferences_changed": false
+}

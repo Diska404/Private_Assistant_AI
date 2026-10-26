@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/assets/leva-banner.svg" alt="LEVA — personal AI assistant, 0.43.0 Leva Live2D advanced rig candidate" width="1200" /></p>
+<p align="center"><img src="docs/assets/leva-banner.svg" alt="LEVA — personal AI assistant, 0.44.0 R04-A artwork structure checkpoint" width="1200" /></p>
 
 <p align="center"><b>Desktop · Web · Android interface · Modular voice · Agent tools · Avatar laboratory</b></p>
 
@@ -6,11 +6,23 @@
 
 Asisten AI pribadi untuk Windows yang menghubungkan percakapan, suara, pengetahuan dan alat pekerjaan pada laptop. Desktop dan web memakai layanan pelaksana yang sama; HP menjadi antarmuka pribadi bagi laptop.
 
-> **Source snapshot 0.43.0 · 26 Oktober 2026.** Kandidat Leva Live2D R03 dengan parallax, napas dan fisika turunan; 3D R2 dipertahankan. Model AI, aset karakter, SDK Live2D, voice pack, credential dan data pengguna tidak disertakan. Avatar premium final dan kendali universal seluruh aplikasi belum diklaim selesai.
+> **Source snapshot 0.44.0 · 26 Oktober 2026.** Checkpoint R04-A pemisahan artwork dan QA developer; rig premium belum selesai; 3D R2 dipertahankan. Model AI, aset karakter, SDK Live2D, voice pack, credential dan data pengguna tidak disertakan. Avatar premium final dan kendali universal seluruh aplikasi belum diklaim selesai.
 
 <table><tr><td width="33%" valign="top"><h3>Percakapan</h3><p>Ruang Asisten, Chat, Secret ♡ dan Leva ♡ dengan konteks serta model sesuai tujuan. ASR, LLM dan TTS merupakan tahap terpisah.</p></td><td width="33%" valign="top"><h3>Pekerjaan</h3><p>Alat aplikasi/browser, terminal, patch, pencarian berkas, progres dan jurnal tugas. Hasil alat perlu diverifikasi; cakupannya tidak menjamin semua canvas atau game.</p></td><td width="33%" valign="top"><h3>Karakter</h3><p>Renderer VRM, controller reaksi/ekspresi, serta backend Live2D native dan VTube Studio opsional. Pemisahan renderer, state dan suara menjaga fleksibilitas.</p></td></tr></table>
 
-## Perkembangan terbaru — Rig Live2D lanjutan 0.43.0
+## Perkembangan terbaru — 0.44.0 / checkpoint struktur R04-A
+
+**R04 premium dan R05 full-body belum selesai.** Checkpoint ini memisahkan 12 layer yang terlihat dari sprite dasar menjadi OpenRaster/AOM editabel dan 57 ArtMesh, sambil mempertahankan 44 parameter serta 59 deformer R03. Tidak ada generative fill, upscaling atau klaim repaint premium.
+
+- **Layer nyata:** tangan mekanik, lengan, rambut/pita, wajah, leher dan kerah; torso remainder masih diberi label menyatu. Permukaan tertutup dan tangan kiri yang terpotong belum digambar.
+- **Panel developer terpisah:** slider dari skema parameter aktual, filter, override/reset, pilihan ArtMesh dan wireframe. Kanal yang tidak ada tidak ditampilkan seolah sudah berfungsi. Audio aktif tetap memiliki prioritas atas mouth override.
+- **Preservasi dan round-trip:** 54 kombinasi pose lulus, geometri wajah yang tidak diubah identik dengan R03, komposisi layer raster sama dengan sumber, serta MOC3 identik setelah simpan/buka ulang/ekspor AOM.
+- **Verifikasi:** 622 tes Python (satu skip opsional), 19 skrip JS, 104 pemeriksaan paket; 60,02 FPS rata-rata pada window 240 frame, p95/p99 18,30 ms, GPU aktual RTX 5070. Belum klaim 120 FPS terkunci.
+- **Yang masih perlu artwork:** perspektif pipi/rahang/hidung, shoulder/underarm, bentuk tangan untuk wave/chin-contact, dan kaki/sepatu. Empat gesture lengan serta full-body belum diimplementasikan. Source art, SDK dan rekaman privat tidak disertakan.
+
+[Laporan status](docs/avatar/live2d-r04/README.md) · [Layer](docs/avatar/live2d-r04/LEVA_LIVE2D_R04_LAYER_SEPARATION.md) · [QA](docs/avatar/live2d-r04/LEVA_LIVE2D_R04_VISUAL_QA.md) · [Graf modul](docs/avatar/live2d-r04/MODULE_MAP.md)
+
+## Riwayat 0.43.0 — Rig Live2D lanjutan
 
 Fork R03 menambah **44 parameter, 59 deformer dan 46 mesh**. Kepala X/Y memakai parallax terbatas, badan memiliki sway/lean dan napas, serta empat kelompok solver menggerakkan poni, rambut belakang/samping dan jaket. **Mata kiri rekonstruksi opsional** berasal dari mata kanan yang ada; pose wink asli tetap bawaan. Tidak menggunakan image generation.
 

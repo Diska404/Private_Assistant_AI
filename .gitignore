@@ -68,3 +68,7 @@ venv/
 *.aom
 *.aodx
 *.aprj
+
+# Private layered artwork and editor autosaves
+*.ora
+*.aom.timelapse

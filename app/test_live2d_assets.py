@@ -5,7 +5,7 @@ import live2d_assets as assets
 
 class Live2DAssetsTests(unittest.TestCase):
     def test_initial_rig_has_separate_pinned_root(self):
-        for key,relative,manifest in [('leva_rig_r02','Leva_Editable_R01/runtime_initial_rig_r02c','leva-rig-r02-manifest.json'),('leva_rig_r03','Leva_Advanced_R03/runtime','leva-rig-r03-manifest.json')]:
+        for key,relative,manifest in [('leva_rig_r02','Leva_Editable_R01/runtime_initial_rig_r02c','leva-rig-r02-manifest.json'),('leva_rig_r03','Leva_Advanced_R03/runtime','leva-rig-r03-manifest.json'),('leva_artwork_r04a','Leva_Artwork_R04/R04A_v3/runtime','leva-artwork-r04a-manifest.json')]:
          with tempfile.TemporaryDirectory() as folder:
              base=Path(folder);models=base/'manifests';models.mkdir();sources=base/'sources'
              rig=sources/relative;rig.mkdir(parents=True)

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
-<title id="title">LEVA — Suara. Konteks. Tindakan.</title><desc id="desc">Identitas proyek asisten AI pribadi Leva, dalam pengembangan. Snapshot arsitektur 0.43.0; source repository 0.43.0.</desc>
+<title id="title">LEVA — Suara. Konteks. Tindakan.</title><desc id="desc">Identitas proyek asisten AI pribadi Leva, dalam pengembangan. Snapshot arsitektur 0.44.0; source repository 0.44.0.</desc>
 <defs><radialGradient id="glow"><stop stop-color="#296744" stop-opacity=".32"/><stop offset="1" stop-color="#0a110d" stop-opacity="0"/></radialGradient><pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#253a2c"/></pattern></defs>
 <rect width="1200" height="440" rx="20" fill="#0a110d"/><rect x="700" y="15" width="470" height="405" fill="url(#dots)" opacity=".55"/><circle cx="945" cy="215" r="220" fill="url(#glow)"/>
 <g fill="none" stroke="#619573"><ellipse cx="945" cy="211" rx="145" ry="145" opacity=".7"/><ellipse cx="945" cy="211" rx="179" ry="96" transform="rotate(-36 945 211)" opacity=".75"/><ellipse cx="945" cy="211" rx="100" ry="176" transform="rotate(-36 945 211)" opacity=".6"/></g>

@@ -8,7 +8,8 @@ MODELS=DATA/'avatar-assets/live2d'
 LOCAL_MODELS=Path(r'D:\AI\AI Lokal Asisten\Model Avatar Leva\Live2D')
 CHARACTERS={'leva_ssr':('leva-ssr-manifest.json','CHA_Levva_SSR_01'),
             'leva_rig_r02':('leva-rig-r02-manifest.json','Leva_Editable_R01/runtime_initial_rig_r02c'),
-            'leva_rig_r03':('leva-rig-r03-manifest.json','Leva_Advanced_R03/runtime')}
+            'leva_rig_r03':('leva-rig-r03-manifest.json','Leva_Advanced_R03/runtime'),
+            'leva_artwork_r04a':('leva-artwork-r04a-manifest.json','Leva_Artwork_R04/R04A_v3/runtime')}
 
 def character_manifest(key):
     if key not in CHARACTERS:raise ValueError('unknown_live2d_model')

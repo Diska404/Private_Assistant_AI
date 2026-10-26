@@ -1,10 +1,10 @@
 {
   "name": "Leva",
-  "version": "0.43.0",
+  "version": "0.44.0",
   "data_root": "D:\\AI\\AI Lokal Asisten\\Leva",
-  "stage": "Live2D R03: limited head parallax, body/breath, four secondary physics groups and opt-in mirrored left eye. Not full perspective yaw or cloth collision. Original assets and 3D preserved.",
-  "web_ui_revision": "leva-live2d-r03-v043",
-  "verification_report": "docs/avatar/live2d-r03/REPORT.md",
+  "stage": "R04-A partial checkpoint: visible artwork separation and native parameter/mesh QA. Premium redraw, head correctives, independent-arm gestures and full-body R05 remain unfinished. Production selection unchanged.",
+  "web_ui_revision": "leva-r04a-artwork-qa-v044",
+  "verification_report": "docs/avatar/live2d-r04/LEVA_LIVE2D_R04_VISUAL_QA.md",
   "video_feature_audit": "VIDEO_FEATURE_AUDIT_20261023.md",
   "rea_ui_plan": "VIDEO03_UI_UPDATE_PLAN.md"
 }
